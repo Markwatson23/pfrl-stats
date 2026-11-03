@@ -44,6 +44,24 @@ table th:first-child,table td:first-child{text-align:left}
 .overview-action:hover{text-decoration:underline}
 .overview-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.overview-grid .overview-head h2{margin:0;text-align:left}.overview-grid .overview-head .overview-action{margin-left:auto;flex-shrink:0}.panel>.overview-head{align-items:center}.panel>.overview-head h2{margin:0;text-align:left}.panel>.overview-head .overview-action{margin-left:auto}.metricbox{display:flex;flex-direction:column;justify-content:space-between;min-width:0}.metricbox b{overflow-wrap:anywhere;font-size:clamp(15px,2vw,22px)}
 @media(max-width:750px){.overview-grid{grid-template-columns:1fr}.podium-grid{gap:7px}.podium-place{padding:10px}.neon-banner{max-height:180px}}
+
+/* Linked archive pages */
+.archive-link{color:#ffaaa4;text-decoration:none;font-weight:750;cursor:pointer;background:none;border:0;padding:0;font:inherit}
+.archive-link:hover{text-decoration:underline}
+.archive-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.archive-heading h2{margin:0}
+.archive-back{border:1px solid #424753;border-radius:9px;padding:9px 13px;background:#191d26;color:#fff;cursor:pointer}
+.archive-hero{background:linear-gradient(125deg,#301a27,#171a22 65%);border:1px solid #42404a;border-radius:18px;padding:22px;margin:15px 0}
+.archive-hero h2{font-size:clamp(24px,4vw,38px);margin:8px 0}
+.archive-hero p{color:#b7c0ce}
+.archive-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}
+.archive-cards>div{background:#11151b;border:1px solid #343b46;border-radius:12px;padding:15px;min-width:0}
+.archive-cards small{display:block;color:#a9b2c0}
+.archive-cards strong{display:block;font-size:20px;overflow-wrap:anywhere;margin-top:7px}
+.archive-links{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.archive-links a{border:1px solid #55505b;padding:10px 14px;border-radius:9px;color:#ffb1a8;text-decoration:none}
+.archive-links a:hover{background:#30212b}
+@media(max-width:680px){.archive-cards{grid-template-columns:1fr 1fr}.archive-hero{padding:15px}}
 </style></head><body><main><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 10–12</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p>
 <div class="tabs" id="tabs"><button data-tab="overview" class="active">Overview</button><button data-tab="championship">Championship</button><button data-tab="driver">Driver Profile</button><button data-tab="circuit">Circuit History</button><button data-tab="compare">Head to Head</button><button data-tab="records">Records</button><button data-tab="race">Race Centre</button></div>
 <div class="filters"><div><label for="season">Season</label><select id="season"><option value="all">All Time</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12" selected>Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div><div><label for="circuit">Circuit</label><select id="circuit"></select></div></div>
@@ -69,8 +87,8 @@ function metrics(rows,races,name){let r=rows.filter(x=>name==='all'||x.driver===
 const avg=(arr,key)=>arr.length?(arr.reduce((a,x)=>a+Number(x[key]),0)/arr.length).toFixed(2):'—';
 function cards(m){return `<div class="stats">${[['Race entries',m.starts],['Victories',m.wins],['Podiums',m.podiums],['Pole positions',m.poles],['DOTD awards',m.dotd],['Total points',fmt(m.points)]].map(([k,v])=>`<div class="stat"><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`}
 function table(headers,rows){return `<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((x,i)=>`<td${i?' class="num"':''}>${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${headers.length}" class="muted">No recorded results for this selection.</td></tr>`}</tbody></table></div>`}
-function leaderboard(rows,races){let names=[...new Set(rows.map(x=>x.driver))],items=names.map(n=>({name:n,...metrics(rows,races,n)})).sort((a,b)=>b.wins-a.wins||b.podiums-a.podiums||b.points-a.points);return table(['Driver','Starts','Wins','Podiums','Poles','DOTD','Points'],items.map(x=>[esc(x.name),x.starts,x.wins,x.podiums,x.poles,x.dotd,fmt(x.points)]))}
-function raceHistory(rows){return table(['Season','Round','Circuit','Driver','Team','Qual','Grid','Finish','Status','Points'],rows.slice().sort((a,b)=>b.season-a.season||b.round-a.round||Number(a.position||999)-Number(b.position||999)).map(x=>[x.season,x.round,esc(x.event),esc(x.driver),esc(x.team),x.qual??'—',x.grid??'—',x.position??'—',esc(x.status),x.points??'—']))}
+function leaderboard(rows,races){let names=[...new Set(rows.map(x=>x.driver))],items=names.map(n=>({name:n,...metrics(rows,races,n)})).sort((a,b)=>b.wins-a.wins||b.podiums-a.podiums||b.points-a.points);return table(['Driver','Starts','Wins','Podiums','Poles','DOTD','Points'],items.map(x=>[navLink(driverUrl(x.name),x.name),x.starts,x.wins,x.podiums,x.poles,x.dotd,fmt(x.points)]))}
+function raceHistory(rows){return table(['Season','Round','Circuit','Driver','Team','Qual','Grid','Finish','Status','Points'],rows.slice().sort((a,b)=>b.season-a.season||b.round-a.round||Number(a.position||999)-Number(b.position||999)).map(x=>[x.season,x.round,navLink(raceUrl(x),x.event),navLink(driverUrl(x.driver),x.driver),esc(x.team),x.qual??'—',x.grid??'—',x.position??'—',esc(x.status),x.points??'—']))}
 
 const normTeam=x=>String(x||'Unknown').replace(/^(Red Bull Racing).*$/,'Red Bull').replace(/^(Racing Bulls).*$/,'Racing Bulls').replace(/^(Alpine).*$/,'Alpine').replace(/^(Aston Martin).*$/,'Aston Martin').replace(/^(Williams).*$/,'Williams').replace(/^(McLaren).*$/,'McLaren').replace(/^(Haas).*$/,'Haas').replace(/^(Kick Sauber).*$/,'Kick Sauber');
 const ordered=(items,key)=>items.slice().sort((a,b)=>b[key]-a[key]||a.name.localeCompare(b.name));
@@ -112,6 +130,60 @@ $('raceDetail').innerHTML='<div class="sectionlabel">'+esc(r.event)+' · Season 
 }
 
 
+
+const raceArticles={
+'12-4':{preview:'https://wirehaired-titanium-b19.notion.site/S12-R04-Qatar-Grand-Prix-Preview-3fe7259fb42180b7bd2fdd64e159e7c1',review:'https://wirehaired-titanium-b19.notion.site/S12-R04-Qatar-Grand-Prix-Race-Review-4007259fb42181c09b36d94fe0d82cc4'},
+'12-5':{preview:'https://wirehaired-titanium-b19.notion.site/S12-R05-Madring-Grand-Prix-Preview-4027259fb421811fa37fdb89e47123b1',review:'https://wirehaired-titanium-b19.notion.site/S12-R05-Madring-Grand-Prix-Race-Review-4067259fb42181b48f47ed070a5292bc',replay:'https://www.youtube.com/watch?v=pzeKlY2mQo0'}
+};
+const raceKey=r=>r.season+'-'+r.round;
+const raceUrl=r=>'#race/'+r.season+'/'+r.round;
+const driverUrl=d=>'#driver/'+encodeURIComponent(d);
+const circuitUrl=c=>'#circuit/'+encodeURIComponent(c);
+const navLink=(url,label)=>'<a class="archive-link" href="'+url+'">'+esc(label)+'</a>';
+function archiveTable(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map((h,i)=>'<th'+(i?' class="num"':'')+'>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>'<td'+(i?' class="num"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
+function racePage(season,round){
+const r=DB.races.find(x=>x.season===season&&x.round===round);
+if(!r)return '<div class="panel"><h2>Race not found</h2></div>';
+const rows=DB.results.filter(x=>x.season===season&&x.round===round),articles=raceArticles[raceKey(r)]||{};
+const podium=[1,2,3].map(p=>rows.find(x=>x.status==='Finished'&&x.position===p));
+const fastest=rows.filter(x=>typeof x.bestlap==='number'&&Number.isFinite(x.bestlap)&&x.bestlap>0).sort((a,b)=>a.bestlap-b.bestlap)[0];
+const links=Object.entries(articles).map(([k,url])=>'<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(k==='preview'?'Race preview':k==='review'?'Race review':'Race replay')+' ↗</a>').join('');
+return '<div class="archive-heading"><button class="archive-back" data-back>← Race Centre</button><span class="muted">Season '+season+' / Round '+round+'</span></div>'+
+'<div class="archive-hero"><div class="sectionlabel">Grand Prix archive</div><h2>'+esc(r.event)+' Grand Prix</h2><p>Season '+season+' · Round '+round+' · '+r.entries+' race entries</p><div class="archive-links">'+(links||'<span class="muted">Previews and reviews will appear here when their links are added.</span>')+'</div></div>'+
+'<div class="archive-cards">'+[['Winner',navLink(driverUrl(r.winner),r.winner)],['Pole position',navLink(driverUrl(r.pole),r.pole)],['Fastest recorded lap',fastest?navLink(driverUrl(fastest.driver),fastest.driver)+' · '+fastest.bestlap.toFixed(3)+'s':'Not recorded'],['Driver of the Day',r.dotd?navLink(driverUrl(r.dotd),r.dotd):'Not recorded'],['Finishers',r.finished],['DNFs',r.dnf]].map(([k,v])=>'<div><small>'+k+'</small><strong>'+v+'</strong></div>').join('')+'</div>'+
+'<div class="panel"><h2>Podium</h2><div class="podium-grid">'+podium.map((x,i)=>'<div class="podium-place"><span class="rank">P'+(i+1)+'</span><strong>'+(x?navLink(driverUrl(x.driver),x.driver):'Not recorded')+'</strong><small>'+esc(x?.team||'')+'</small></div>').join('')+'</div></div>'+
+'<div class="panel"><h2>Race classification</h2>'+archiveTable(['Finish','Driver','Team','Grid','Qualifying','Status','Points','Best lap'],rows.slice().sort((a,b)=>(a.position??999)-(b.position??999)).map(x=>[x.position??'—',navLink(driverUrl(x.driver),x.driver),esc(x.team),x.grid??'—',x.qual??'—',esc(x.status),x.points??'—',typeof x.bestlap==='number'?x.bestlap.toFixed(3)+'s':'—']))+'</div>'+
+'<div class="panel"><h2>Circuit history</h2><p>'+navLink(circuitUrl(r.event),'Explore every recorded '+r.event+' race')+'</p></div>';
+}
+function driverPage(name){
+const all=DB.results.filter(x=>x.driver===name&&x.round!==0);
+if(!all.length)return '<div class="panel"><h2>Driver not found</h2></div>';
+const races=DB.races.filter(x=>x.round!==0),m=metrics(all,races,name);
+const byCircuit=[...new Set(all.map(x=>x.event))].sort((a,b)=>a.localeCompare(b));
+const bySeason=[...new Set(all.map(x=>x.season))].sort((a,b)=>b-a);
+return '<div class="archive-heading"><button class="archive-back" data-back>← Driver profiles</button><span class="muted">Career archive · Seasons '+bySeason.slice().reverse().join(', ')+'</span></div>'+
+'<div class="archive-hero"><div class="sectionlabel">Driver profile</div><h2>'+esc(name)+'</h2><p>All recorded race appearances across available seasons.</p></div>'+cards(m)+
+'<div class="panel"><h2>Season-by-season record</h2>'+archiveTable(['Season','Entries','Wins','Podiums','Points','Teams'],bySeason.map(season=>{const a=all.filter(x=>x.season===season),mm=metrics(a,races.filter(x=>x.season===season),name);return ['Season '+season,mm.starts,mm.wins,mm.podiums,fmt(mm.points),esc([...new Set(a.map(x=>x.team))].join(', '))]}))+'</div>'+
+'<div class="panel"><h2>Record at every circuit</h2>'+archiveTable(['Circuit','Entries','Wins','Podiums','Best finish','Average finish','Points'],byCircuit.map(c=>{const a=all.filter(x=>x.event===c),fin=a.filter(x=>x.status==='Finished'&&Number.isFinite(x.position));return [navLink(circuitUrl(c),c),a.length,fin.filter(x=>x.position===1).length,fin.filter(x=>x.position<=3).length,fin.length?Math.min(...fin.map(x=>x.position)):'—',fin.length?(fin.reduce((t,x)=>t+x.position,0)/fin.length).toFixed(1):'—',fmt(a.reduce((t,x)=>t+(Number(x.points)||0),0))]}))+'</div>'+
+'<div class="panel"><h2>Complete race history</h2>'+archiveTable(['Race','Team','Grid','Finish','Status','Points'],all.slice().sort((a,b)=>b.season-a.season||b.round-a.round).map(x=>[navLink(raceUrl(x),'S'+x.season+' R'+x.round+' · '+x.event),esc(x.team),x.grid??'—',x.position??'—',esc(x.status),x.points??0]))+'</div>';
+}
+function circuitPage(name){
+const races=DB.races.filter(x=>x.event===name&&x.round!==0).sort((a,b)=>b.season-a.season||b.round-a.round);
+if(!races.length)return '<div class="panel"><h2>Circuit not found</h2></div>';
+const results=DB.results.filter(x=>x.event===name&&x.round!==0);
+return '<div class="archive-heading"><button class="archive-back" data-back>← Circuit history</button><span class="muted">'+races.length+' recorded races</span></div>'+
+'<div class="archive-hero"><div class="sectionlabel">Circuit archive</div><h2>'+esc(name)+'</h2><p>Results, winners and driver records across every available season.</p></div>'+
+'<div class="panel"><h2>Grand Prix history</h2>'+archiveTable(['Race','Winner','Pole','DOTD','Entries'],races.map(x=>[navLink(raceUrl(x),'Season '+x.season+' · Round '+x.round),navLink(driverUrl(x.winner),x.winner),navLink(driverUrl(x.pole),x.pole),x.dotd?navLink(driverUrl(x.dotd),x.dotd):'—',x.entries]))+'</div>'+
+'<div class="panel"><h2>Driver records at '+esc(name)+'</h2>'+leaderboard(results,races)+'</div>';
+}
+function archiveRoute(){
+const parts=decodeURIComponent(location.hash.slice(1)).split('/'),type=parts[0];
+if(type==='race'&&parts.length===3)return racePage(Number(parts[1]),Number(parts[2]));
+if(type==='driver'&&parts.length===2)return driverPage(parts[1]);
+if(type==='circuit'&&parts.length===2)return circuitPage(parts[1]);
+return null;
+}
+
 function overview(f){
 const rows=getRows({...f,d:'all'}),raceList=getRaces({...f,d:'all'}).slice().sort((a,b)=>b.season-a.season||b.round-a.round);
 const byDriver=new Map(),byTeam=new Map();
@@ -120,7 +192,7 @@ byDriver.set(r.driver,(byDriver.get(r.driver)||0)+p);
 byTeam.set(t,(byTeam.get(t)||0)+p)}
 const driverRanks=[...byDriver].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
 const teamRanks=[...byTeam].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
-const rankTable=(items,title)=>'<div class="panel"><div class="overview-head"><h2>'+title+'</h2><button class="overview-action" data-open-tab="championship">Full standings →</button></div>'+table(['#','Name','Points','Gap'],items.slice(0,5).map(([name,p],i)=>[i+1,esc(name),fmt(p),i===0?'Leader':'−'+fmt(items[0][1]-p)]))+'</div>';
+const rankTable=(items,title)=>'<div class="panel"><div class="overview-head"><h2>'+title+'</h2><button class="overview-action" data-open-tab="championship">Full standings →</button></div>'+table(['#','Name','Points','Gap'],items.slice(0,5).map(([name,p],i)=>[i+1,title.includes('Drivers')?navLink(driverUrl(name),name):esc(name),fmt(p),i===0?'Leader':'−'+fmt(items[0][1]-p)]))+'</div>';
 const latest=raceList[0],latestRows=latest?DB.results.filter(x=>x.season===latest.season&&x.round===latest.round):[];
 const classified=latestRows.filter(x=>x.status==='Finished'&&x.position>=1&&x.position<=3).sort((a,b)=>a.position-b.position);
 const fastest=latestRows.filter(x=>Number.isFinite(x.bestlap)&&x.bestlap>0).sort((a,b)=>a.bestlap-b.bestlap)[0];
@@ -132,7 +204,7 @@ const spotlight='<div class="overview-head" style="margin:22px 0 10px"><h2 style
 return spotlight+
 '<div class="sectionlabel">Championship Snapshot</div><div class="notice">Provisional points from recorded results; official championship adjustments are not yet included.</div><div class="overview-grid" style="margin-top:16px">'+rankTable(driverRanks,'Top 5 Drivers')+rankTable(teamRanks,'Top 5 Constructors')+'</div>'+
 '<div class="sectionlabel">Latest Grand Prix</div>'+podium+
-'<div class="panel"><h2>Race Winners</h2>'+table(['Season','Round','Circuit','Winner','Pole','DOTD'],raceList.map(x=>[x.season,x.round,esc(x.event),esc(x.winner),esc(x.pole),esc(x.dotd||'Not recorded')]))+'</div>';
+'<div class="panel"><h2>Race Winners</h2>'+table(['Season','Round','Circuit','Winner','Pole','DOTD'],raceList.map(x=>[x.season,x.round,navLink(raceUrl(x),x.event),navLink(driverUrl(x.winner),x.winner),esc(x.pole),esc(x.dotd||'Not recorded')]))+'</div>';
 }
 
 function render(){const f=selected(),races=getRaces(f),rows=getRows(f),m=metrics(rows,races,f.d),section=$('content');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));let out='';
@@ -143,5 +215,8 @@ if(tab==='circuit'){if(f.c==='all'){out=`<div class="panel"><h2>Circuit History<
 if(tab==='compare'){const names=[...new Set(getRows({...f,d:'all'}).map(x=>x.driver))].sort();const first=f.d!=='all'?f.d:names[0],second=names.find(x=>x!==first);out=`<div class="panel"><h2>Head to Head</h2><p>Compare two drivers within the selected season and circuit.</p><div class="filters" style="grid-template-columns:1fr 1fr"><div><label>Driver A</label><select id="compA">${names.map(x=>`<option ${x===first?'selected':''}>${esc(x)}</option>`).join('')}</select></div><div><label>Driver B</label><select id="compB">${names.map(x=>`<option ${x===second?'selected':''}>${esc(x)}</option>`).join('')}</select></div></div><div id="comparison"></div></div>`}
 if(tab==='race'){out=raceCentre(f)}
 if(tab==='records'){out=`<div class="panel"><h2>All Driver Records</h2><p>Rankings based on the selected season and circuit.</p>${leaderboard(getRows({...f,d:'all'}),races)}</div><div class="panel"><h2>Race Results Archive</h2>${raceHistory(getRows({...f,d:'all'}))}</div>`}
-section.innerHTML=out;section.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.openTab;render()}));if(tab==='race'){$('raceChoice')?.addEventListener('change',renderRaceDetail);renderRaceDetail()}if(tab==='compare'){function compare(){let a=$('compA').value,b=$('compB').value,ra=getRows({...f,d:'all'});let ma=metrics(ra,races,a),mb=metrics(ra,races,b);let shared=new Set(ra.filter(x=>x.driver===a).map(x=>x.season+'-'+x.round));let pair=ra.filter(x=>x.driver===b&&shared.has(x.season+'-'+x.round));let starts=new Set(pair.map(x=>x.season+'-'+x.round));let h2hA=ra.filter(x=>x.driver===a&&starts.has(x.season+'-'+x.round));let aQ=0,bQ=0,aF=0,bF=0;for(const x of h2hA){let y=pair.find(z=>z.season===x.season&&z.round===x.round);if(!y)continue;if(Number.isFinite(x.qual)&&Number.isFinite(y.qual)){if(x.qual<y.qual)aQ++;if(y.qual<x.qual)bQ++}if(Number.isFinite(x.position)&&Number.isFinite(y.position)&&x.status==='Finished'&&y.status==='Finished'){if(x.position<y.position)aF++;if(y.position<x.position)bF++}}$('comparison').innerHTML=table(['Metric',esc(a),esc(b)],[['Starts',ma.starts,mb.starts],['Wins',ma.wins,mb.wins],['Podiums',ma.podiums,mb.podiums],['Poles',ma.poles,mb.poles],['DOTD',ma.dotd,mb.dotd],['Points',fmt(ma.points),fmt(mb.points)],['Qualifying H2H (shared races)',aQ,bQ],['Finish H2H (both classified)',aF,bF]])} $('compA').addEventListener('change',compare);$('compB').addEventListener('change',compare);compare()}}
-$('season').addEventListener('change',()=>{updateDriverOptions();render()});['driver','circuit'].forEach(id=>$(id).addEventListener('change',render));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));render();</script></body></html>
+const archived=archiveRoute();if(archived!==null)out=archived;
+section.innerHTML=out;
+section.querySelector('[data-back]')?.addEventListener('click',()=>{const kind=location.hash.slice(1).split('/')[0];history.pushState(null,'',location.pathname+location.search);tab=kind==='race'?'race':kind==='driver'?'driver':'circuit';render()});
+section.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.openTab;render()}));if(tab==='race'){$('raceChoice')?.addEventListener('change',renderRaceDetail);renderRaceDetail()}if(tab==='compare'){function compare(){let a=$('compA').value,b=$('compB').value,ra=getRows({...f,d:'all'});let ma=metrics(ra,races,a),mb=metrics(ra,races,b);let shared=new Set(ra.filter(x=>x.driver===a).map(x=>x.season+'-'+x.round));let pair=ra.filter(x=>x.driver===b&&shared.has(x.season+'-'+x.round));let starts=new Set(pair.map(x=>x.season+'-'+x.round));let h2hA=ra.filter(x=>x.driver===a&&starts.has(x.season+'-'+x.round));let aQ=0,bQ=0,aF=0,bF=0;for(const x of h2hA){let y=pair.find(z=>z.season===x.season&&z.round===x.round);if(!y)continue;if(Number.isFinite(x.qual)&&Number.isFinite(y.qual)){if(x.qual<y.qual)aQ++;if(y.qual<x.qual)bQ++}if(Number.isFinite(x.position)&&Number.isFinite(y.position)&&x.status==='Finished'&&y.status==='Finished'){if(x.position<y.position)aF++;if(y.position<x.position)bF++}}$('comparison').innerHTML=table(['Metric',esc(a),esc(b)],[['Starts',ma.starts,mb.starts],['Wins',ma.wins,mb.wins],['Podiums',ma.podiums,mb.podiums],['Poles',ma.poles,mb.poles],['DOTD',ma.dotd,mb.dotd],['Points',fmt(ma.points),fmt(mb.points)],['Qualifying H2H (shared races)',aQ,bQ],['Finish H2H (both classified)',aF,bF]])} $('compA').addEventListener('change',compare);$('compB').addEventListener('change',compare);compare()}}
+$('season').addEventListener('change',()=>{updateDriverOptions();render()});['driver','circuit'].forEach(id=>$(id).addEventListener('change',render));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('hashchange',()=>{render();window.scrollTo(0,0)});render();</script></body></html>

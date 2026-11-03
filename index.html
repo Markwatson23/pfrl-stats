@@ -79,6 +79,7 @@ select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(
 .chart-scroll{overflow-x:auto;max-width:100%;padding:6px 0}.chart-legend{display:flex;flex-wrap:wrap;gap:15px;align-items:center;margin:10px 0;color:#c9d8cf}.chart-legend small{color:#a8b9ad}.trophy-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.trophy{padding:16px 10px;border:1px solid #376249;border-radius:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;background:#14291e;min-height:132px}.trophy-icon{font-size:28px;color:#ff9b45}.trophy strong{font-size:12px}.trophy small{font-size:10px}.trophy.locked{opacity:.48;background:#171a1b}.trophy.locked .trophy-icon{color:#8a9a90}@media(max-width:680px){.trophy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .achievement-intro{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.achievement-intro strong{color:#4de69a;font-size:19px}.achievement-intro span{font-size:12px;color:#b6c8bc}.achievement-first{display:flex;align-items:center;gap:14px;background:#1b3025;border:1px solid #4de69a;border-radius:12px;padding:14px;margin-bottom:20px}.achievement-first-icon{font-size:32px}.achievement-first p{margin:5px 0 0;font-size:12px}.achievement-track{padding:17px 0;border-top:1px solid #304538}.achievement-track-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.achievement-track-head h3{margin:0;font-size:17px}.achievement-track-head p{margin:5px 0 12px;font-size:12px;color:#afc5b6}.achievement-track-head>strong{color:#ff9b45;font-size:22px}.achievement-medals{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}.achievement-medal{display:flex;align-items:center;flex-direction:column;gap:5px;text-align:center;padding:13px 4px;border:1px solid #3b4d40;border-radius:12px;background:#17231b;min-width:0}.achievement-medal strong{font-size:12px}.achievement-medal small{font-size:11px}.achievement-medal.pending{opacity:.37;filter:grayscale(1)}.medal-art{width:54px;height:54px;display:grid;place-items:center;border-radius:50%;border:4px double currentColor;background:radial-gradient(circle at 30% 25%,#ffffff3b,transparent 50%),#333;color:#cd8a53;box-shadow:inset 0 0 0 3px #0004,0 3px 9px #0004}.medal-art span{font-size:23px;filter:drop-shadow(0 1px 1px #0008)}.achievement-medal.bronze .medal-art{color:#d99862;background-color:#6d3d24}.achievement-medal.silver .medal-art{color:#dce2e8;background-color:#586571}.achievement-medal.gold .medal-art{color:#ffdc6c;background-color:#8c6514}.achievement-medal.platinum .medal-art{color:#b5faff;background-color:#337e88}.achievement-medal.diamond .medal-art{color:#dfbfff;background-color:#7655a6}.medal-status{font-size:9px;letter-spacing:.6px;color:#4de69a;font-weight:800}.achievement-progress{height:7px;background:#253a2d;border-radius:99px;overflow:hidden;margin:6px 0}.achievement-progress div{height:100%;background:linear-gradient(90deg,#4de69a,#ff8a24);border-radius:99px}@media(max-width:680px){.achievement-medals{gap:4px}.achievement-medal{padding:8px 1px}.achievement-medal strong{font-size:10px}.achievement-medal small{font-size:10px}.medal-art{width:39px;height:39px;border-width:3px}.medal-art span{font-size:17px}.medal-status{font-size:7px}}
 .career-medals{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}.career-medal{border-radius:99px;padding:7px 10px;font-size:11px;font-weight:750;background:#283c30;border:1px solid #638b6c}.career-medal.bronze{border-color:#d99862;color:#e4b38d}.career-medal.silver{border-color:#b6c4d0;color:#e0e6ee}.career-medal.gold{border-color:#ffdc6c;color:#ffe58b}.career-medal.platinum{border-color:#b5faff;color:#c4faff}.career-medal.diamond{border-color:#dfbfff;color:#e6ceff}
+.achievement-special{border-top:1px solid #39523f;margin-top:24px;padding-top:20px}.achievement-special h3{margin:0 0 6px}.special-medal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.special-medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;border:1px solid #526b4c;border-radius:13px;background:linear-gradient(145deg,#25382a,#14251c);padding:15px 8px;min-height:175px}.special-medal-art{display:grid;place-items:center;width:58px;height:58px;border:3px double #f3b85a;border-radius:50%;font-size:28px;background:radial-gradient(circle at 25% 20%,#ffffff40,transparent 60%),#61451c}.special-medal strong{font-size:13px;color:#f8e8bc}.special-medal small{font-size:10px;color:#c4d0c3;line-height:1.4}.special-medal-status{margin-top:auto;font-size:10px;font-weight:800;color:#4de69a}.special-medal.pending{opacity:.42;filter:grayscale(1)}.career-medal.special{border-color:#f3b85a;color:#f8e8bc}@media(max-width:680px){.special-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style></head><body><main><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 10–12</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p>
 <div class="tabs" id="tabs"><button data-tab="overview" class="active">Overview</button><button data-tab="championship">Championship</button><button data-tab="driver">Driver Profile</button><button data-tab="circuit">Circuit History</button><button data-tab="compare">Head to Head</button><button data-tab="records">Records</button><button data-tab="race">Race Centre</button></div>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all">All Time</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12" selected>Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -239,6 +240,73 @@ const ordered=rows.slice().sort((a,b)=>a.season-b.season||a.round-b.round),raceS
 const relevantRaces=races.filter(x=>raceSet.has(raceId(x)));
 return {entries:ordered.length,finishes:ordered.filter(validFinish).length,wins:ordered.filter(x=>validFinish(x)&&x.position===1).length,podiums:ordered.filter(x=>validFinish(x)&&x.position<=3).length,dotd:relevantRaces.filter(x=>x.dotd===name).length,poles:relevantRaces.filter(x=>x.pole===name).length,points:ordered.reduce((n,x)=>n+(Number(x.points)||0),0)};
 }
+const specialAchievementDefs=[
+{id:'comeback',name:'Comeback King',icon:'🚀',desc:'Gain at least 10 places from grid to classified finish'},
+{id:'consistent',name:'Mr Consistent',icon:'🎯',desc:'Score points in five consecutive race entries'},
+{id:'untouchable',name:'Untouchable',icon:'👑',desc:'Take pole position and win the same Grand Prix'},
+{id:'clean',name:'Clean Sheet',icon:'🛡️',desc:'Finish 10 consecutive race entries without a DNF'},
+{id:'hat',name:'Hat-Trick',icon:'🔥',desc:'Win three consecutive race entries'},
+{id:'circuit',name:'Circuit Specialist',icon:'🗺️',desc:'Win three Grands Prix at the same circuit'},
+{id:'underdog',name:'The Underdog',icon:'🐺',desc:'Win a race starting outside the top 10'},
+{id:'triple',name:'Triple Crown',icon:'💎',desc:'Take pole, victory and fastest recorded race lap at one Grand Prix'},
+{id:'above',name:'Above Expectations',icon:'📈',desc:'Finish at least five places better than your own previous five-race average finish'},
+{id:'backmarker',name:'Back of the Grid Hero',icon:'⚔️',desc:'Start 15th or lower and finish in the top 10'},
+{id:'recovery',name:'Recovery Drive',icon:'🔧',desc:'Finish in the points immediately after a DNF'},
+{id:'improver',name:'The Improver',icon:'🌱',desc:'Improve average classified finish by at least three places between consecutive sets of five finishes'},
+{id:'survivor',name:'Race Survivor',icon:'🏁',desc:'Finish five consecutive race entries'},
+{id:'qualifier',name:'Qualifying Upset',icon:'⚡',desc:'Qualify five places better than your previous five qualifying results average'},
+{id:'steady',name:'Reliable Racer',icon:'🔩',desc:'Finish 20 career races, regardless of finishing position'},
+{id:'point',name:'Points Breakthrough',icon:'✨',desc:'Score your first championship point'},
+{id:'topten',name:'Top Ten Regular',icon:'🔟',desc:'Record ten classified top-ten finishes'},
+{id:'gainer',name:'Positive Progress',icon:'↗',desc:'Gain positions in five separate classified races'},
+{id:'fiver',name:'Five-Race Finisher',icon:'🏅',desc:'Complete five race entries without a DNF'},
+{id:'qualgain',name:'Saturday Specialist',icon:'⏱️',desc:'Qualify inside the top 10 five times'}
+];
+function specialAchievements(rows,races,name){
+const a=rows.slice().sort((x,y)=>x.season-y.season||x.round-y.round),byRace=new Map(races.map(x=>[raceId(x),x]));
+const winsByCircuit=new Map(),unlocked=new Map();
+const unlock=(id,x)=>{if(x&&!unlocked.has(id))unlocked.set(id,x)};
+const run=(predicate,n)=>{let count=0;for(const x of a){count=predicate(x)?count+1:0;if(count>=n)return x}return null};
+unlock('consistent',run(x=>validFinish(x)&&Number(x.points)>0,5));
+unlock('clean',run(x=>x.status!=='DNF'&&validFinish(x),10));
+unlock('hat',run(x=>validFinish(x)&&x.position===1,3));
+unlock('survivor',run(validFinish,5));
+unlock('fiver',run(x=>x.status!=='DNF'&&validFinish(x),5));
+const finished=[],qualifying=[];let gains=0,topten=0,topqual=0,finishes=0,prev=null;
+for(const x of a){
+const r=byRace.get(raceId(x)),sameRace=DB.results.filter(y=>raceId(y)===raceId(x));
+if(validFinish(x)){
+finishes++;
+if(finishes===20)unlock('steady',x);
+if(x.position<=10&&++topten===10)unlock('topten',x);
+if(Number(x.points)>0)unlock('point',x);
+if(validGrid(x)){
+const gain=x.grid-x.position;
+if(gain>=10)unlock('comeback',x);
+if(gain>0&&++gains===5)unlock('gainer',x);
+if(x.grid>=15&&x.position<=10)unlock('backmarker',x);
+if(x.grid>10&&x.position===1)unlock('underdog',x);
+}
+if(prev&&prev.status==='DNF'&&Number(x.points)>0)unlock('recovery',x);
+if(finished.length>=5){const avg=finished.slice(-5).reduce((n,y)=>n+y.position,0)/5;if(x.position<=avg-5)unlock('above',x);}
+finished.push(x);
+if(finished.length>=10){const last=finished.slice(-5).reduce((n,y)=>n+y.position,0)/5,prior=finished.slice(-10,-5).reduce((n,y)=>n+y.position,0)/5;if(prior-last>=3)unlock('improver',x);}
+if(x.position===1){const n=(winsByCircuit.get(x.event)||0)+1;winsByCircuit.set(x.event,n);if(n>=3)unlock('circuit',x);}
+}
+if(validQual(x)){
+if(x.qual<=10&&++topqual===5)unlock('qualgain',x);
+if(qualifying.length>=5){const avg=qualifying.slice(-5).reduce((n,y)=>n+y.qual,0)/5;if(x.qual<=avg-5)unlock('qualifier',x);}
+qualifying.push(x);
+}
+if(r&&r.pole===name&&validFinish(x)&&x.position===1){
+unlock('untouchable',x);
+const fastest=sameRace.filter(y=>Number.isFinite(y.bestlap)&&y.bestlap>0).sort((u,v)=>u.bestlap-v.bestlap)[0];
+if(fastest&&fastest.driver===name)unlock('triple',x);
+}
+prev=x;
+}
+return unlocked;
+}
 function trophyCabinet(rows,races,name){
 const stats=achievementData(rows,races,name),first=rows.slice().sort((a,b)=>a.season-b.season||a.round-b.round)[0];
 const tracks=achievementTracks.map(track=>{
@@ -247,9 +315,11 @@ const cards=track.thresholds.map((threshold,i)=>{const tier=medalTiers[i],earned
 return '<div class="achievement-medal '+tier.className+(earned?' earned':' pending')+'" title="'+esc(track.title)+' · '+tier.name+' · '+threshold+' '+esc(track.description)+'"><span class="medal-art"><span>'+track.icon+'</span></span><strong>'+tier.name+'</strong><small>'+threshold+' '+(track.kind==='points'?'pts':'')+'</small>'+(earned?'<span class="medal-status">UNLOCKED</span>':'<span class="medal-status">LOCKED</span>')+'</div>';}).join('');
 return '<section class="achievement-track"><div class="achievement-track-head"><div><h3>'+track.icon+' '+esc(track.title)+'</h3><p>'+esc(track.description)+'</p></div><strong>'+fmt(current)+'</strong></div><div class="achievement-medals">'+cards+'</div>'+(next?'<div class="achievement-progress"><div style="width:'+Math.min(100,current/next*100).toFixed(1)+'%"></div></div><small class="muted">'+fmt(next-current)+' to next medal ('+fmt(next)+')</small>':'<small class="muted">All five medals unlocked</small>')+'</section>';
 }).join('');
+const specials=specialAchievements(rows,races,name);
+const specialHtml='<section class="achievement-special"><h3>Special Achievement Medals</h3><p class="muted">Racecraft, consistency and improvement — not just wins and podiums.</p><div class="special-medal-grid">'+specialAchievementDefs.map(d=>{const x=specials.get(d.id);return '<div class="special-medal '+(x?'earned':'pending')+'"><span class="special-medal-art">'+d.icon+'</span><strong>'+esc(d.name)+'</strong><small>'+esc(d.desc)+'</small><span class="special-medal-status">'+(x?resultLink(x):'LOCKED')+'</span></div>';}).join('')+'</div></section>';
 const firstRace='<div class="achievement-first"><span class="achievement-first-icon">🏎</span><div><strong>First Race · Rookie Debut</strong><p>'+(first?'Unlocked · '+resultLink(first):'Not yet unlocked')+'</p></div></div>';
 const earnedCount=achievementTracks.reduce((n,t)=>n+t.thresholds.filter(v=>stats[t.kind]>=v).length,first?1:0);
-return '<div class="achievement-intro"><strong>'+earnedCount+' / '+(achievementTracks.length*5+1)+' medals earned</strong><span>Career achievements across all recorded seasons</span></div>'+firstRace+tracks;
+return '<div class="achievement-intro"><strong>'+(earnedCount+specials.size)+' / '+(achievementTracks.length*5+1+specialAchievementDefs.length)+' medals earned</strong><span>Career achievements across all recorded seasons</span></div>'+firstRace+tracks;
 }
 function driverOverview(name,rows){
 const a=orderedResults(rows),q=averagePosition(a,'qual'),fin=averagePosition(a,'position'),recent=a.slice(0,5);
@@ -258,6 +328,7 @@ const biggest=gains.slice().sort((x,y)=>y.gain-x.gain)[0],points=a.reduce((n,x)=
 const races=DB.races.filter(x=>a.some(y=>raceId(y)===raceId(x)));
 const m=metrics(a,races,name),team=a[0]?.team||'Not recorded';
 const careerMedals=achievementData(a,races,name);const earnedMedals=achievementTracks.map(t=>{const tier=t.thresholds.reduce((v,n,i)=>careerMedals[t.kind]>=n?i:v,-1);return tier>=0?'<span class="career-medal '+medalTiers[tier].className+'" title="'+esc(t.title)+' · '+medalTiers[tier].name+'">'+t.icon+' '+esc(t.title)+' · '+medalTiers[tier].name+'</span>':'';}).filter(Boolean).join('');
+const earnedSpecials=specialAchievementDefs.filter(d=>specialAchievements(a,races,name).has(d.id)).map(d=>'<span class="career-medal special" title="'+esc(d.desc)+'">'+d.icon+' '+esc(d.name)+'</span>').join('');
 const form=recent.map(x=>'<a href="'+raceUrl(x)+'" class="form-tile"><small>S'+x.season+' R'+x.round+'</small><strong>'+(validFinish(x)?'P'+x.position:esc(x.status))+'</strong><small>'+esc(x.event)+'</small></a>').join('');
 const finishPositions=finished.map(x=>x.position);
 const best=finished.slice().sort((x,y)=>x.position-y.position)[0];
@@ -279,7 +350,7 @@ badgeStat('Longest points streak',consecutive(x=>validFinish(x)&&Number(x.points
 '</div><h3>Last five races</h3><div class="form-strip">'+form+'</div></div>'+
 '<div class="panel"><h2>Qualifying & race performance</h2><p>Position by Grand Prix across recorded seasons.</p>'+performanceChart(a)+'</div>'+ '<div class="panel"><h2>PFRL Achievement Cabinet</h2>'+trophyCabinet(a,races,name)+'</div>'+
 '<div class="panel"><h2>Personal circuit records</h2>'+circuitTable+'</div>'+
-'<div class="panel"><h2>Shareable career card</h2><div class="career-card"><small>PFRL PADDOCK · DRIVER CAREER</small><h2>'+esc(name)+'</h2><p>'+esc(team)+'</p><div class="career-numbers">'+[['ENTRIES',m.starts],['WINS',m.wins],['PODIUMS',m.podiums],['POLES',poleCount],['POINTS',fmt(points)],['AVG QUAL',q.value],['AVG FINISH',fin.value]].map(([k,v])=>'<div><small>'+k+'</small><strong>'+v+'</strong></div>').join('')+'</div><div class="career-medals">'+(earnedMedals||'<span class="muted">No medals unlocked yet</span>')+'</div></div><p class="muted">Screenshot the card to share in Discord. Statistics cover the recorded seasons shown above.</p></div>';
+'<div class="panel"><h2>Shareable career card</h2><div class="career-card"><small>PFRL PADDOCK · DRIVER CAREER</small><h2>'+esc(name)+'</h2><p>'+esc(team)+'</p><div class="career-numbers">'+[['ENTRIES',m.starts],['WINS',m.wins],['PODIUMS',m.podiums],['POLES',poleCount],['POINTS',fmt(points)],['AVG QUAL',q.value],['AVG FINISH',fin.value]].map(([k,v])=>'<div><small>'+k+'</small><strong>'+v+'</strong></div>').join('')+'</div><div class="career-medals">'+(earnedMedals+earnedSpecials||'<span class="muted">No medals unlocked yet</span>')+'</div></div><p class="muted">Screenshot the card to share in Discord. Statistics cover the recorded seasons shown above.</p></div>';
 }
 function overtakingPage(season){
 const rows=DB.results.filter(x=>x.round!==0&&(season==='all'||String(x.season)===season)&&validGrid(x)&&validFinish(x));

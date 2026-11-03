@@ -40,7 +40,7 @@ tr:hover td{background:#252932}
 .podium-place small{color:#b1bac7}
 .overview-action{background:none;border:0;padding:0;color:#ff9c94;cursor:pointer;font-weight:750}
 .overview-action:hover{text-decoration:underline}
-.overview-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.overview-grid .overview-head h2{margin-left:auto;text-align:right}.overview-grid .overview-head .overview-action{order:-1;flex-shrink:0}
+.overview-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.overview-grid .overview-head h2{margin-left:auto;text-align:right}.overview-grid .overview-head .overview-action{order:-1;flex-shrink:0}.panel>.overview-head{align-items:center}.panel>.overview-head h2{margin:0;text-align:left}.panel>.overview-head .overview-action{margin-left:auto}.metricbox{display:flex;flex-direction:column;justify-content:space-between;min-width:0}.metricbox b{overflow-wrap:anywhere;font-size:clamp(15px,2vw,22px)}
 @media(max-width:750px){.overview-grid{grid-template-columns:1fr}.podium-grid{gap:7px}.podium-place{padding:10px}.neon-banner{max-height:180px}}
 </style></head><body><main><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 10–12</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p>
 <div class="tabs" id="tabs"><button data-tab="overview" class="active">Overview</button><button data-tab="championship">Championship</button><button data-tab="driver">Driver Profile</button><button data-tab="circuit">Circuit History</button><button data-tab="compare">Head to Head</button><button data-tab="records">Records</button><button data-tab="race">Race Centre</button></div>
@@ -129,7 +129,7 @@ const spotlight='<div class="overview-head" style="margin:22px 0 10px"><h2 style
 (selectedDriver?'':'<p class="muted" style="margin:0 0 12px">Select a driver above to see their statistics.</p>')+cards(dm);
 return spotlight+
 '<div class="sectionlabel">Championship Snapshot</div><div class="notice">Provisional points from recorded results; official championship adjustments are not yet included.</div><div class="overview-grid" style="margin-top:16px">'+rankTable(driverRanks,'Top 5 Drivers')+rankTable(teamRanks,'Top 5 Constructors')+'</div>'+
-'<div class="sectionlabel">Latest Grand Prix</div>'+latest+
+'<div class="sectionlabel">Latest Grand Prix</div>'+podium+
 '<div class="panel"><h2>Race Winners</h2>'+table(['Season','Round','Circuit','Winner','Pole','DOTD'],raceList.map(x=>[x.season,x.round,esc(x.event),esc(x.winner),esc(x.pole),esc(x.dotd||'Not recorded')]))+'</div>';
 }
 

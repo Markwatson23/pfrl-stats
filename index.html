@@ -118,9 +118,9 @@ const podium=latest?'<div class="panel"><div class="overview-head"><h2>Latest Ra
 '<div class="metricgrid" style="margin-top:14px">'+[['Pole position',latest.pole||'Not recorded'],['Fastest recorded race lap',fastest?fastest.driver+' · '+fastest.bestlap.toFixed(3)+'s':'Not recorded'],['Driver of the Day',latest.dotd||'Not recorded'],['Race entries',latest.entries]].map(([k,v])=>'<div class="metricbox"><small class="muted">'+esc(k)+'</small><b>'+esc(String(v))+'</b></div>').join('')+'</div></div>':'<div class="panel"><h2>Latest Race</h2><p>No completed races in this selection.</p></div>';
 const selectedDriver=f.d!=='all'?f.d:(driverRanks[0]?.[0]||null),dm=metrics(rows,raceList,selectedDriver||'all');
 const spotlight='<div class="panel"><div class="overview-head"><h2>Driver Spotlight</h2><button class="overview-action" data-open-tab="driver">Driver profile →</button></div><p>'+esc(selectedDriver||'Select a driver')+' · choose another driver using the filter above</p>'+cards(dm)+'</div>';
-return '<div class="sectionlabel">Season Dashboard</div>'+cards(metrics(rows,raceList,'all'))+
+return '<div class="sectionlabel">'+(f.d==='all'?'Season Dashboard':esc(f.d)+' · Season Statistics')+'</div>'+cards(metrics(rows,raceList,f.d))+
 '<div class="sectionlabel">Championship Snapshot</div><div class="notice">Provisional points from recorded results; official championship adjustments are not yet included.</div><div class="overview-grid" style="margin-top:16px">'+rankTable(driverRanks,'Top 5 Drivers')+rankTable(teamRanks,'Top 5 Constructors')+'</div>'+
-'<div class="sectionlabel">Grand Prix & Driver Performance</div>'+latest+spotlight+
+'<div class="sectionlabel">Grand Prix & Driver Performance</div><div class="overview-grid">'+latest+spotlight+'</div>'+
 '<div class="panel"><h2>Race Winners</h2>'+table(['Season','Round','Circuit','Winner','Pole','DOTD'],raceList.map(x=>[x.season,x.round,esc(x.event),esc(x.winner),esc(x.pole),esc(x.dotd||'Not recorded')]))+'</div>';
 }
 

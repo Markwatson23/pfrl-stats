@@ -50,7 +50,13 @@ const fmt=x=>Number(x||0).toLocaleString('en-GB'),pct=(n,d)=>d?((100*n/d).toFixe
 let tab='overview';
 const driverNames=[...new Set(DB.results.map(x=>x.driver))].sort((a,b)=>a.localeCompare(b));
 const circuits=[...new Set(DB.races.map(x=>x.event))].sort((a,b)=>a.localeCompare(b));
-$('driver').innerHTML='<option value="all">All Drivers</option>'+driverNames.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+function updateDriverOptions(){
+const previous=$('driver').value,season=$('season').value;
+const available=season==='all'?driverNames:[...new Set(DB.results.filter(x=>x.season==season&&x.round!==0).map(x=>x.driver))].sort((a,b)=>a.localeCompare(b));
+$('driver').innerHTML='<option value="all">Select a Driver</option>'+available.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+$('driver').value=available.includes(previous)?previous:'all';
+}
+updateDriverOptions();
 $('circuit').innerHTML='<option value="all">All Circuits</option>'+circuits.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
 const selected=()=>({s:$('season').value,d:$('driver').value,c:$('circuit').value});
 function filt(a,{s,d,c},includePre=false){return a.filter(x=>(s==='all'||x.season==s)&&(c==='all'||x.event===c)&&(d==='all'||(x.driver??x.winner)===d)&&(includePre||x.round!==0))}
@@ -134,4 +140,4 @@ if(tab==='compare'){const names=[...new Set(getRows({...f,d:'all'}).map(x=>x.dri
 if(tab==='race'){out=raceCentre(f)}
 if(tab==='records'){out=`<div class="panel"><h2>All Driver Records</h2><p>Rankings based on the selected season and circuit.</p>${leaderboard(getRows({...f,d:'all'}),races)}</div><div class="panel"><h2>Race Results Archive</h2>${raceHistory(getRows({...f,d:'all'}))}</div>`}
 section.innerHTML=out;section.querySelectorAll('[data-open-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.openTab;render()}));if(tab==='race'){$('raceChoice')?.addEventListener('change',renderRaceDetail);renderRaceDetail()}if(tab==='compare'){function compare(){let a=$('compA').value,b=$('compB').value,ra=getRows({...f,d:'all'});let ma=metrics(ra,races,a),mb=metrics(ra,races,b);let shared=new Set(ra.filter(x=>x.driver===a).map(x=>x.season+'-'+x.round));let pair=ra.filter(x=>x.driver===b&&shared.has(x.season+'-'+x.round));let starts=new Set(pair.map(x=>x.season+'-'+x.round));let h2hA=ra.filter(x=>x.driver===a&&starts.has(x.season+'-'+x.round));let aQ=0,bQ=0,aF=0,bF=0;for(const x of h2hA){let y=pair.find(z=>z.season===x.season&&z.round===x.round);if(!y)continue;if(Number.isFinite(x.qual)&&Number.isFinite(y.qual)){if(x.qual<y.qual)aQ++;if(y.qual<x.qual)bQ++}if(Number.isFinite(x.position)&&Number.isFinite(y.position)&&x.status==='Finished'&&y.status==='Finished'){if(x.position<y.position)aF++;if(y.position<x.position)bF++}}$('comparison').innerHTML=table(['Metric',esc(a),esc(b)],[['Starts',ma.starts,mb.starts],['Wins',ma.wins,mb.wins],['Podiums',ma.podiums,mb.podiums],['Poles',ma.poles,mb.poles],['DOTD',ma.dotd,mb.dotd],['Points',fmt(ma.points),fmt(mb.points)],['Qualifying H2H (shared races)',aQ,bQ],['Finish H2H (both classified)',aF,bF]])} $('compA').addEventListener('change',compare);$('compB').addEventListener('change',compare);compare()}}
-['season','driver','circuit'].forEach(id=>$(id).addEventListener('change',render));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));render();</script></body></html>
+$('season').addEventListener('change',()=>{updateDriverOptions();render()});['driver','circuit'].forEach(id=>$(id).addEventListener('change',render));document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));render();</script></body></html>

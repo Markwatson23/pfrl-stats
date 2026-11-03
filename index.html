@@ -74,6 +74,7 @@ table th:first-child,table td:first-child{text-align:left}
 .podium-place .rank{color:var(--pfrl-orange)}
 select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--pfrl-green);outline-offset:2px}
 .filters{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom-track{max-width:420px;margin:32px 0 0;padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:15px}.bottom-track label{color:var(--pfrl-green)}@media(max-width:680px){.filters{grid-template-columns:1fr 1fr}.bottom-track{max-width:none}}
+.metric-stat{display:block;text-decoration:none;color:var(--text);cursor:pointer;transition:border-color .15s,transform .15s}.metric-stat:hover{border-color:var(--pfrl-green);transform:translateY(-2px)}.metric-stat:focus-visible{outline:2px solid var(--pfrl-orange);outline-offset:3px}.metric-more{display:block;margin-top:10px;font-size:11px;font-weight:750;color:var(--pfrl-green)}.metric-total{font-size:clamp(32px,6vw,55px);font-weight:850;color:var(--pfrl-orange);margin-top:12px}.archive-links a.metric-current{background:#184e35;border-color:var(--pfrl-green);color:#fff}
 </style></head><body><main><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 10–12</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p>
 <div class="tabs" id="tabs"><button data-tab="overview" class="active">Overview</button><button data-tab="championship">Championship</button><button data-tab="driver">Driver Profile</button><button data-tab="circuit">Circuit History</button><button data-tab="compare">Head to Head</button><button data-tab="records">Records</button><button data-tab="race">Race Centre</button></div>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all">All Time</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12" selected>Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -98,6 +99,36 @@ function getRaces(f){return filt(DB.races,{...f,d:'all'})}function getRows(f){re
 function metrics(rows,races,name){let r=rows.filter(x=>name==='all'||x.driver===name),rr=races.filter(x=>name==='all'||x.winner===name),poles=races.filter(x=>name==='all'||x.pole===name),dotd=races.filter(x=>name==='all'||x.dotd===name);return {starts:r.length,wins:rr.length,podiums:r.filter(x=>x.status==='Finished'&&x.position>=1&&x.position<=3).length,poles:poles.length,dotd:dotd.length,points:r.reduce((a,x)=>a+(Number(x.points)||0),0),dnf:r.filter(x=>x.status==='DNF').length,finish:r.filter(x=>x.status==='Finished'&&Number.isFinite(x.position)),qual:r.filter(x=>Number.isFinite(x.qual))}}
 const lapTime=v=>typeof v==='number'&&Number.isFinite(v)&&v>0?Math.floor(v/60)+':'+(v%60).toFixed(3).padStart(6,'0'):'—';
 const avg=(arr,key)=>arr.length?(arr.reduce((a,x)=>a+Number(x[key]),0)/arr.length).toFixed(2):'—';
+const metricTypes=[['starts','Race entries'],['wins','Victories'],['podiums','Podiums'],['poles','Pole positions'],['dotd','Driver of the Day'],['points','Total points']];
+const metricUrl=(driver,type,season='all')=>'#metric/'+encodeURIComponent(driver)+'/'+type+'/'+season;
+function spotlightCards(m,driver,season){
+return '<div class="stats">'+metricTypes.map(([key,label])=>{
+const val=key==='points'?fmt(m.points):m[key];
+return '<a class="stat metric-stat" href="'+metricUrl(driver,key,season)+'" aria-label="View '+esc(label)+' for '+esc(driver)+'"><small>'+label+'</small><strong>'+val+'</strong><span class="metric-more">View breakdown →</span></a>';
+}).join('')+'</div>';
+}
+function metricPage(name,type,season){
+const def=metricTypes.find(x=>x[0]===type);
+if(!def)return '<div class="panel"><h2>Statistic not found</h2></div>';
+const rows=DB.results.filter(x=>x.driver===name&&x.round!==0&&(season==='all'||String(x.season)===season));
+const races=DB.races.filter(x=>x.round!==0&&(season==='all'||String(x.season)===season));
+if(!rows.length)return '<div class="panel"><h2>No recorded races for this driver and season.</h2></div>';
+const m=metrics(rows,races,name);
+const matches=rows.filter(x=>type==='starts'||type==='points'||type==='wins'&&x.status==='Finished'&&x.position===1||type==='podiums'&&x.status==='Finished'&&x.position>=1&&x.position<=3||type==='poles'&&races.some(r=>r.season===x.season&&r.round===x.round&&r.pole===name)||type==='dotd'&&races.some(r=>r.season===x.season&&r.round===x.round&&r.dotd===name));
+const ordered=matches.slice().sort((a,b)=>b.season-a.season||b.round-a.round);
+const description={starts:'Every recorded race entry.',wins:'Every race victory.',podiums:'Every top-three race finish.',poles:'Every race where this driver was recorded as pole-sitter.',dotd:'Every recorded Driver of the Day award.',points:'Points earned in each recorded race.'};
+const resultRows=ordered.map(x=>{
+const a=raceArticles[x.season+'-'+x.round]||{};
+const links=[a.preview?'<a href="'+esc(a.preview)+'" target="_blank" rel="noopener noreferrer">Preview ↗</a>':'',a.review?'<a href="'+esc(a.review)+'" target="_blank" rel="noopener noreferrer">Review ↗</a>':''].filter(Boolean).join(' · ');
+const detail=type==='points'?fmt(x.points??0):type==='starts'?esc(x.status):type==='wins'?'P1':type==='podiums'?'P'+x.position:type==='poles'?'Pole': 'DOTD';
+return [navLink(raceUrl(x),'S'+x.season+' R'+x.round+' · '+x.event),esc(x.team),x.grid??'—',x.position??'—',detail,links||'—'];
+});
+return '<div class="archive-heading"><button class="archive-back" data-back>← Driver Spotlight</button><span class="muted">'+(season==='all'?'All recorded seasons':'Season '+season)+'</span></div>'+
+'<div class="archive-hero"><div class="sectionlabel">'+navLink(driverUrl(name),name)+' · Driver statistics</div><h2>'+def[1]+'</h2><p>'+description[type]+'</p><div class="metric-total">'+(type==='points'?fmt(m.points):m[type])+'</div></div>'+
+'<div class="archive-links">'+metricTypes.map(([key,label])=>'<a class="'+(key===type?'metric-current':'')+'" href="'+metricUrl(name,key,season)+'">'+label+'</a>').join('')+'</div>'+
+'<div class="panel"><h2>'+ordered.length+' '+(ordered.length===1?'race':'races')+'</h2>'+archiveTable(['Grand Prix','Team','Grid','Finish','Result','Articles'],resultRows)+'</div>'+
+'<p class="muted">Select any Grand Prix for the full classification. Preview and review links appear where articles are available.</p>';
+}
 function cards(m){return `<div class="stats">${[['Race entries',m.starts],['Victories',m.wins],['Podiums',m.podiums],['Pole positions',m.poles],['DOTD awards',m.dotd],['Total points',fmt(m.points)]].map(([k,v])=>`<div class="stat"><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>`}
 function table(headers,rows){return `<div class="tablewrap"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((x,i)=>`<td${i?' class="num"':''}>${x}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${headers.length}" class="muted">No recorded results for this selection.</td></tr>`}</tbody></table></div>`}
 function leaderboard(rows,races){let names=[...new Set(rows.map(x=>x.driver))],items=names.map(n=>({name:n,...metrics(rows,races,n)})).sort((a,b)=>b.wins-a.wins||b.podiums-a.podiums||b.points-a.points);return table(['Driver','Starts','Wins','Podiums','Poles','DOTD','Points'],items.map(x=>[navLink(driverUrl(x.name),x.name),x.starts,x.wins,x.podiums,x.poles,x.dotd,fmt(x.points)]))}
@@ -192,6 +223,7 @@ return '<div class="archive-heading"><button class="archive-back" data-back>← 
 }
 function archiveRoute(){
 const parts=decodeURIComponent(location.hash.slice(1)).split('/'),type=parts[0];
+if(type==='metric'&&parts.length===4)return metricPage(parts[1],parts[2],parts[3]);
 if(type==='race'&&parts.length===3)return racePage(Number(parts[1]),Number(parts[2]));
 if(type==='driver'&&parts.length===2)return driverPage(parts[1]);
 if(type==='circuit'&&parts.length===2)return circuitPage(parts[1]);
@@ -214,7 +246,7 @@ const podium=latest?'<div class="panel"><div class="overview-head"><h2>Latest Ra
 '<div class="metricgrid" style="margin-top:14px">'+[['Pole position',latest.pole||'Not recorded'],['Fastest recorded race lap',fastest?fastest.driver+' · '+lapTime(fastest.bestlap):'Not recorded'],['Driver of the Day',latest.dotd||'Not recorded'],['Race entries',latest.entries]].map(([k,v])=>'<div class="metricbox"><small class="muted">'+esc(k)+'</small><b>'+esc(String(v))+'</b></div>').join('')+'</div></div>':'<div class="panel"><h2>Latest Race</h2><p>No completed races in this selection.</p></div>';
 const selectedDriver=f.d!=='all'?f.d:null,dm=metrics(rows,raceList,selectedDriver||'__none__');
 const spotlight='<div class="overview-head" style="margin:22px 0 10px"><h2 style="margin:0">Driver Spotlight'+(selectedDriver?' · '+esc(selectedDriver):'')+'</h2><button class="overview-action" data-open-tab="driver">Full driver profile →</button></div>'+
-(selectedDriver?'':'<p class="muted" style="margin:0 0 12px">Select a driver above to see their statistics.</p>')+cards(dm);
+(selectedDriver?'':'<p class="muted" style="margin:0 0 12px">Select a driver above to see their statistics.</p>')+(selectedDriver?spotlightCards(dm,selectedDriver,f.s):cards(dm));
 return spotlight+
 '<div class="sectionlabel">Championship Snapshot</div><div class="notice">Provisional points from recorded results; official championship adjustments are not yet included.</div><div class="overview-grid" style="margin-top:16px">'+rankTable(driverRanks,'Top 5 Drivers')+rankTable(teamRanks,'Top 5 Constructors')+'</div>'+
 '<div class="sectionlabel">Latest Grand Prix</div>'+podium+(latest?'<p>'+navLink(raceUrl(latest),'View full '+latest.event+' Grand Prix page')+'</p>':'')+
@@ -230,7 +262,7 @@ if(archive!==null){
 section.innerHTML=archive;
 section.querySelector('[data-back]')?.addEventListener('click',()=>{
 const kind=location.hash.slice(1).split('/')[0];
-tab=kind==='race'?'race':kind==='driver'?'driver':'circuit';
+tab=kind==='metric'?'overview':kind==='race'?'race':kind==='driver'?'driver':'circuit';
 history.pushState(null,'',location.pathname+location.search);
 render();
 $('content').scrollIntoView({block:'start'});

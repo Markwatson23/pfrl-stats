@@ -81,6 +81,32 @@ select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(
 .career-medals{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}.career-medal{border-radius:99px;padding:7px 10px;font-size:11px;font-weight:750;background:#283c30;border:1px solid #638b6c}.career-medal.bronze{border-color:#d99862;color:#e4b38d}.career-medal.silver{border-color:#b6c4d0;color:#e0e6ee}.career-medal.gold{border-color:#ffdc6c;color:#ffe58b}.career-medal.platinum{border-color:#b5faff;color:#c4faff}.career-medal.diamond{border-color:#dfbfff;color:#e6ceff}
 .achievement-special{border-top:1px solid #39523f;margin-top:24px;padding-top:20px}.achievement-special h3{margin:0 0 6px}.special-medal-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}.special-medal{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;border:1px solid #526b4c;border-radius:13px;background:linear-gradient(145deg,#25382a,#14251c);padding:15px 8px;min-height:175px}.special-medal-art{display:grid;place-items:center;width:58px;height:58px;border:3px double #f3b85a;border-radius:50%;font-size:28px;background:radial-gradient(circle at 25% 20%,#ffffff40,transparent 60%),#61451c}.special-medal strong{font-size:13px;color:#f8e8bc}.special-medal small{font-size:10px;color:#c4d0c3;line-height:1.4}.special-medal-status{margin-top:auto;font-size:10px;font-weight:800;color:#4de69a}.special-medal.pending{opacity:.42;filter:grayscale(1)}.career-medal.special{border-color:#f3b85a;color:#f8e8bc}@media(max-width:680px){.special-medal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .earned-medal-grid{grid-template-columns:repeat(5,minmax(0,1fr));margin:12px 0 24px}.achievement-explore{margin-top:24px}.earned-achievement-link{text-decoration:none;color:inherit}.earned-achievement-link:hover{border-color:#4de69a;transform:translateY(-2px)}.earned-achievement-link .special-medal-status{color:#4de69a}@media(max-width:680px){.earned-medal-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Driver profiles: replace horizontally scrolling desktop tables with readable stacked cards on phones. */
+@media(max-width:680px){
+.driver-mobile-layout{min-width:0}
+.driver-mobile-layout .panel,.driver-mobile-layout .archive-hero{min-width:0}
+.driver-mobile-layout .tablewrap{overflow:visible;width:100%}
+.driver-mobile-layout .tablewrap table{min-width:0;width:100%;display:block}
+.driver-mobile-layout .tablewrap thead{display:none}
+.driver-mobile-layout .tablewrap tbody{display:grid;grid-template-columns:1fr;gap:10px;width:100%}
+.driver-mobile-layout .tablewrap tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:7px 10px;padding:13px;border:1px solid #34483b;border-radius:12px;background:#111d17;min-width:0}
+.driver-mobile-layout .tablewrap td,.driver-mobile-layout .tablewrap td.num{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;text-align:left;min-width:0;padding:0;border:0;white-space:normal;overflow-wrap:anywhere;font-size:13px;line-height:1.4}
+.driver-mobile-layout .tablewrap td:first-child{grid-column:1/-1;font-size:15px;font-weight:750;border-bottom:1px solid #304438;padding-bottom:9px;margin-bottom:3px}
+.driver-mobile-layout .tablewrap td:before{content:attr(data-label);display:block;font-size:10px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;color:#9cb5a6;margin-bottom:3px}
+.driver-mobile-layout .tablewrap td:first-child:before{display:none}
+.driver-mobile-layout .tablewrap td a{overflow-wrap:anywhere}
+.driver-mobile-layout .metricgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.driver-mobile-layout .metricbox{padding:11px;min-width:0}
+.driver-mobile-layout .metricbox b{font-size:19px;overflow-wrap:anywhere}
+.driver-mobile-layout .career-card{padding:15px}
+.driver-mobile-layout .career-numbers{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.driver-mobile-layout .form-strip{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.driver-mobile-layout .form-tile{min-width:0;padding:8px 2px}
+.driver-mobile-layout .form-tile small{font-size:9px;overflow-wrap:anywhere}
+.driver-mobile-layout .archive-links a{flex:1 1 100%;text-align:center}
+.driver-mobile-layout .milestone-grid{grid-template-columns:1fr}
+}
+@media(max-width:380px){.driver-mobile-layout .metricgrid{grid-template-columns:1fr}}
 </style></head><body><main><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 10–12</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p>
 <div class="tabs" id="tabs"><button data-tab="overview" class="active">Overview</button><button data-tab="championship">Championship</button><button data-tab="driver">Driver Profile</button><button data-tab="circuit">Circuit History</button><button data-tab="compare">Head to Head</button><button data-tab="records">Records</button><button data-tab="race">Race Centre</button></div>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all">All Time</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12" selected>Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -191,7 +217,7 @@ const raceUrl=r=>'#race/'+r.season+'/'+r.round;
 const driverUrl=d=>'#driver/'+encodeURIComponent(d);
 const circuitUrl=c=>'#circuit/'+encodeURIComponent(c);
 const navLink=(url,label)=>'<a class="archive-link" href="'+url+'">'+esc(label)+'</a>';
-function archiveTable(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map((h,i)=>'<th'+(i?' class="num"':'')+'>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>'<td'+(i?' class="num"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
+function archiveTable(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map((h,i)=>'<th'+(i?' class="num"':'')+'>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>'<td data-label="'+esc(headers[i])+'"'+(i?' class="num"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
 function racePage(season,round){
 const r=DB.races.find(x=>x.season===season&&x.round===round);
 if(!r){const upcoming=raceArticles[season+'-'+round];if(upcoming)return '<div class="archive-heading"><button class="archive-back" data-back>← Race Centre</button></div><div class="archive-hero"><h2>Japanese Grand Prix</h2><div class="archive-links"><a href="'+esc(upcoming.preview)+'" target="_blank" rel="noopener noreferrer">Read the race preview ↗</a></div></div><div class="panel"><div class="sectionlabel">Race information</div><p>Season 12 · Round 6 · Suzuka</p><p>Qualifying and race results will be added when available.</p></div>';return '<div class="panel"><h2>Race not found</h2></div>'};
@@ -462,6 +488,7 @@ $('bottomTrack').style.display=archive===null?'':'none';
 $('tabs').style.display=archive===null?'':'none';
 if(archive!==null){
 section.innerHTML=archive;
+section.classList.toggle('driver-mobile-layout',location.hash.startsWith('#driver/'));
 section.querySelector('[data-back]')?.addEventListener('click',()=>{
 const kind=location.hash.slice(1).split('/')[0];
 tab=kind==='achievements'?'driver':kind==='metric'?'overview':kind==='overtaking'?'records':kind==='rivalry'?'compare':kind==='teammate'?'driver':kind==='race'?'race':kind==='driver'?'driver':'circuit';
@@ -470,7 +497,7 @@ render();
 $('content').scrollIntoView({block:'start'});
 });
 return;
-}document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));let out='';
+}section.classList.remove('driver-mobile-layout');document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));let out='';
 if(tab==='overview'){out=overview(f)}
 if(tab==='championship'){out=championship(f)}
 if(tab==='driver'){if(f.d==='all'){out='<div class="panel"><h2>Driver Directory</h2><p>Select a driver above, or open a career page directly below.</p><div class="archive-links">'+[...new Set(getRows({...f,d:'all'}).map(x=>x.driver))].sort((a,b)=>a.localeCompare(b)).map(d=>'<a href="'+driverUrl(d)+'">'+esc(d)+'</a>').join('')+'</div></div>'+`<div class="panel"><h2>Driver Leaderboard</h2>${leaderboard(rows,races)}</div>`}else{out=`<div class="panel"><h2>${esc(f.d)} — Driver Profile</h2><p>${f.s==='all'?'All recorded seasons':'Season '+f.s}${f.c==='all'?'':' · '+esc(f.c)}</p>${cards(m)}</div><div class="panel"><h2>Performance</h2>${table(['Average qualifying position','Qualifying results','Average race finish','Classified finishes','DNFs','DNF rate','Best finish'],[[averagePosition(rows,'qual').value,averagePosition(rows,'qual').count,averagePosition(rows,'position').value,averagePosition(rows,'position').count,m.dnf,pct(m.dnf,m.starts),m.finish.length?Math.min(...m.finish.map(x=>x.position)):'—']])}</div><div class="panel"><h2>Race-by-Race Results</h2>${raceHistory(rows)}</div>${driverExtras(rows,m)}`}}

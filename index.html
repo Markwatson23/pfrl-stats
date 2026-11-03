@@ -119,7 +119,7 @@ const all=getRaces({...f,d:'all'}).slice().sort((a,b)=>b.season-a.season||b.roun
 const choice=all[0];
 if(!choice)return '<div class="panel"><h2>Race Centre</h2><p>No races match the selected filters.</p></div>';
 const opts=all.map(x=>'<option value="'+x.season+'-'+x.round+'">S'+x.season+' R'+x.round+' · '+esc(x.event)+'</option>').join('');
-return '<div class="panel"><h2>Race Centre</h2><p>Select a Grand Prix to open its dedicated race page, or use the quick classification selector.</p><div class="archive-links">'+all.map(x=>'<a href="'+raceUrl(x)+'">S'+x.season+' · R'+x.round+' · '+esc(x.event)+'</a>').join('')+'</div><label for="raceChoice">Quick race classification</label><select id="raceChoice">'+opts+'</select><div id="raceDetail"></div></div>';
+return '<div class="panel"><h2>Race Centre</h2><p>Select a Grand Prix to open its dedicated race page, or use the quick classification selector.</p><div class="archive-links">'+(f.s==='all'||f.s==='12'?'<a href="#race/12/6">S12 · R6 · Japan (preview)</a>':'')+all.map(x=>'<a href="'+raceUrl(x)+'">S'+x.season+' · R'+x.round+' · '+esc(x.event)+'</a>').join('')+'</div><label for="raceChoice">Quick race classification</label><select id="raceChoice">'+opts+'</select><div id="raceDetail"></div></div>';
 }
 function renderRaceDetail(){
 const el=$('raceChoice');if(!el)return;

@@ -132,6 +132,7 @@ $('raceDetail').innerHTML='<div class="sectionlabel">'+esc(r.event)+' · Season 
 
 
 const raceArticles={
+'12-6':{preview:'https://app.notion.com/p/4077259fb421813abc9ac3398175f65e?pvs=204'},
 '12-4':{preview:'https://wirehaired-titanium-b19.notion.site/S12-R04-Qatar-Grand-Prix-Preview-3fe7259fb42180b7bd2fdd64e159e7c1',review:'https://wirehaired-titanium-b19.notion.site/S12-R04-Qatar-Grand-Prix-Race-Review-4007259fb42181c09b36d94fe0d82cc4'},
 '12-5':{preview:'https://wirehaired-titanium-b19.notion.site/S12-R05-Madring-Grand-Prix-Preview-4027259fb421811fa37fdb89e47123b1',review:'https://wirehaired-titanium-b19.notion.site/S12-R05-Madring-Grand-Prix-Race-Review-4067259fb42181b48f47ed070a5292bc',replay:'https://www.youtube.com/watch?v=pzeKlY2mQo0'}
 };
@@ -143,7 +144,7 @@ const navLink=(url,label)=>'<a class="archive-link" href="'+url+'">'+esc(label)+
 function archiveTable(headers,rows){return '<div class="tablewrap"><table><thead><tr>'+headers.map((h,i)=>'<th'+(i?' class="num"':'')+'>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map((v,i)=>'<td'+(i?' class="num"':'')+'>'+v+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'}
 function racePage(season,round){
 const r=DB.races.find(x=>x.season===season&&x.round===round);
-if(!r)return '<div class="panel"><h2>Race not found</h2></div>';
+if(!r){const upcoming=raceArticles[season+'-'+round];if(upcoming)return '<div class="archive-heading"><button class="archive-back" data-back>← Race Centre</button></div><div class="archive-hero"><div class="sectionlabel">Upcoming / results not yet recorded</div><h2>Japanese Grand Prix</h2><p>Season 12 · Round 6 · Suzuka</p><div class="archive-links"><a href="'+esc(upcoming.preview)+'" target="_blank" rel="noopener noreferrer">Read the race preview ↗</a></div><p>Qualifying and race results will appear here once verified data is added.</p></div>';return '<div class="panel"><h2>Race not found</h2></div>'};
 const rows=DB.results.filter(x=>x.season===season&&x.round===round),articles=raceArticles[raceKey(r)]||{};
 const podium=[1,2,3].map(p=>rows.find(x=>x.status==='Finished'&&x.position===p));
 const fastest=rows.filter(x=>typeof x.bestlap==='number'&&Number.isFinite(x.bestlap)&&x.bestlap>0).sort((a,b)=>a.bestlap-b.bestlap)[0];

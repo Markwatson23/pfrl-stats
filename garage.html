@@ -13,7 +13,7 @@ const keyMap={"Front wing":"frontWing","Rear wing":"rearWing","On-throttle diffe
 function parseIssue(issue){
 if(!issue||issue.pull_request||!issue.title?.startsWith("[PFRL SETUP] ")||typeof issue.body!=="string"||!issue.body.startsWith("PFRL DRIVER SETUP SUBMISSION"))return null;
 const values={};
-for(const line of issue.body.split(/\\r?\\n/)){const m=line.match(/^([^:\\n]+): (.*)$/);if(m)values[m[1]]=m[2].trim()}
+for(const line of issue.body.split(/\r?\n/)){const m=line.match(/^([^:\n]+): (.*)$/);if(m)values[m[1]]=m[2].trim()}
 const driver=values.Driver,track=values.Circuit;
 if(!driver||driver.length>70||!circuits.includes(track)||!["F1 26","F1 25"].includes(values.Game)||!["Dry","Wet","Mixed"].includes(values.Conditions))return null;
 const o={id:"issue-"+issue.number,driver,track,game:values.Game,conditions:values.Conditions,session:values.Session||"Race",lap:values["Best lap"]==="Not supplied"?"":values["Best lap"],notes:(values.Notes||"").slice(0,2000),verified:"Community submission",geometry:"",url:issue.html_url};

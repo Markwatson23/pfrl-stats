@@ -27,8 +27,7 @@ revoke all on public.driver_profiles from anon;
 revoke all on public.driver_setups from anon;
 grant select,insert,update,delete on public.driver_profiles to authenticated;
 grant select,insert,update,delete on public.driver_setups to authenticated;
--- Public published setups are viewable by everyone, including anonymous visitors.
-grant select on public.driver_setups to anon;
+-- Setup browsing requires Discord-authenticated membership; no anon grants.
 drop policy if exists "profiles owner read" on public.driver_profiles;
 create policy "profiles owner read" on public.driver_profiles for select to authenticated using (user_id = (select auth.uid()));
 drop policy if exists "profiles owner insert" on public.driver_profiles;
@@ -38,7 +37,7 @@ create policy "profiles owner update" on public.driver_profiles for update to au
 drop policy if exists "profiles owner delete" on public.driver_profiles;
 create policy "profiles owner delete" on public.driver_profiles for delete to authenticated using (user_id = (select auth.uid()));
 drop policy if exists "setups public or owner read" on public.driver_setups;
-create policy "setups public or owner read" on public.driver_setups for select to anon,authenticated using (visibility = 'public' or user_id = (select auth.uid()));
+create policy "setups public or owner read" on public.driver_setups for select to authenticated using (visibility = 'public' or user_id = (select auth.uid()));
 drop policy if exists "setups owner insert" on public.driver_setups;
 create policy "setups owner insert" on public.driver_setups for insert to authenticated with check (user_id = (select auth.uid()));
 drop policy if exists "setups owner update" on public.driver_setups;

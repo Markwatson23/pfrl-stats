@@ -1,0 +1,30 @@
+[
+  {
+    "id": "watson-suzuka-v5",
+    "driver": "Watson",
+    "game": "F1 26",
+    "track": "Japan · Suzuka",
+    "conditions": "Dry",
+    "session": "Time Trial",
+    "lap": "1:29.700",
+    "notes": "Best confirmed testing setup (V5). Geometry recorded as LLLL in the original test notes.",
+    "frontWing": 50,
+    "rearWing": 16,
+    "onThrottle": 90,
+    "offThrottle": 50,
+    "geometry": "LLLL",
+    "frontSuspension": 41,
+    "rearSuspension": 41,
+    "frontARB": 10,
+    "rearARB": 1,
+    "frontHeight": 22,
+    "rearHeight": 45,
+    "brakePressure": 99,
+    "brakeBias": 57,
+    "frontLeft": 28.5,
+    "frontRight": 28.5,
+    "rearLeft": 21,
+    "rearRight": 21,
+    "verified": "Driver-tested"
+  }
+]

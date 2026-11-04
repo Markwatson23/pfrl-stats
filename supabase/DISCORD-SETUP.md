@@ -7,7 +7,7 @@ The current GitHub Pages Garage uses GitHub Issues for community submissions. Th
 3. In Discord Developer Portal create an OAuth2 application. Add the Supabase callback URL shown under Supabase Authentication > Providers > Discord to Discord's Redirects.
 4. Copy Discord client ID and client secret into Supabase's Discord provider settings. Never put the Discord secret in this repository.
 5. Provide only the Supabase project URL and public publishable/anon key for the GitHub Pages frontend. Never expose the service_role key.
-6. Test as Watson: sign in with Discord; save a profile (driver name, platform, input, default visibility); create private and public setups; verify anonymous users can read only public setups; verify a second signed-in user cannot edit or delete Watson's records.
+6. Test as Watson: sign in with Discord; save a profile (driver name, platform, input, default visibility); create private and public setups; verify anonymous users cannot read any setups and signed-in members can read public setups; verify a second signed-in user cannot edit or delete Watson's records.
 7. Migrate public Garage publishing from unauthenticated GitHub Issues to Supabase owner-only writes. Remove the old GitHub Issue submission pathway before claiming editing requires Discord login.
 
-Security: RLS is enabled in the schema. The profile table is private to its owner; only explicitly public setups can be read by other users. Any other future data tables (laps, race plans) need equivalent ownership policies.
+Security: RLS is enabled in the schema. The profile table is private to its owner; only authenticated users can read public setups belonging to other drivers. Any other future data tables (laps, race plans) need equivalent ownership policies.

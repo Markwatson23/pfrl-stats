@@ -499,31 +499,59 @@ const next=achievementTracks.map(t=>{const v=t.thresholds.find(n=>n>m[t.kind]);r
 return {name,total:standard+special.size+(rows.length?1:0),special:special.size,next};}).sort((a,b)=>b.total-a.total||b.special-a.special);
 return '<div class="archive-heading"><button class="archive-back" data-back>← Statistics Centre</button></div><div class="archive-hero"><h2>Achievement Leaderboard</h2><p>Career medal collection across recorded seasons. All 51 medals count equally.</p></div><div class="panel"><div class="rank-list">'+scores.map((d,i)=>'<a class="rank-row" href="#achievements/'+encodeURIComponent(d.name)+'"><span class="rank-pos">'+(i+1)+'</span><span class="rank-person"><strong>'+esc(d.name)+'</strong><small>'+(d.next?'Next: '+esc(d.next.name)+' · '+d.next.left+' remaining':'All standard tiers completed')+'</small></span><span class="rank-score">'+d.total+' <small>/ 51</small></span></a>').join('')+'</div></div>';
 }
+function powerRankingsData(season,through=Infinity){
+const races=DB.races.filter(x=>x.round!==0&&(season==='all'||String(x.season)===season)).sort((a,b)=>a.season-b.season||a.round-b.round);
+const available=races.slice(0,through),keys=new Set(available.map(raceId)),groups=new Map();
+const clamp=(v)=>Math.max(0,Math.min(1,v)),mean=a=>a.length?a.reduce((n,x)=>n+x,0)/a.length:null;
+for(const x of DB.results.filter(x=>keys.has(raceId(x)))){
+const field=DB.results.filter(y=>raceId(y)===raceId(x)),n=field.length;
+const race=validFinish(x)?35*clamp((n-x.position)/Math.max(1,n-1)):0;
+const qualifying=validQual(x)?20*clamp((n-x.qual)/Math.max(1,n-1)):null;
+const execution=validGrid(x)?(validFinish(x)?25*clamp(.5+(x.grid-x.position)/Math.max(1,n-1)):0):null;
+const completion=validFinish(x)?20:0;
+const possible=55+(qualifying===null?0:20)+(execution===null?0:25);
+const score=100*(race+(qualifying||0)+(execution||0)+completion)/possible;
+if(!groups.has(x.driver))groups.set(x.driver,[]);
+groups.get(x.driver).push({...x,score,components:{race,qualifying,execution,completion},partial:possible<100});
+}
+const activeKeys=new Set(available.slice(-3).map(raceId));
+const data=[...groups].map(([name,rows])=>{
+const recent=mean(rows.slice(-3).map(x=>x.score)),prior=mean(rows.slice(-6,-3).map(x=>x.score));
+return {name,rows,entries:rows.length,points:rows.reduce((n,x)=>n+(Number(x.points)||0),0),rating:mean(rows.map(x=>x.score)),recent,trend:prior===null?null:recent-prior,active:rows.some(x=>activeKeys.has(raceId(x)))};
+});
+const championship=data.slice().sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name));
+championship.forEach((d,i)=>d.championship=i+1);
+const sort=(a,b)=>b.rating-a.rating||b.entries-a.entries||a.name.localeCompare(b.name);
+const eligible=data.filter(x=>x.entries>=3&&x.active).sort(sort);
+eligible.forEach((d,i)=>d.rank=i+1);
+return {data,eligible,newcomers:data.filter(x=>x.entries<3&&x.active).sort(sort),inactive:data.filter(x=>!x.active).sort(sort),races:available};
+}
 function performanceRankings(season){
-const rows=DB.results.filter(x=>x.round!==0&&(season==='all'||String(x.season)===season));
-const groups=new Map();for(const x of rows){if(!groups.has(x.driver))groups.set(x.driver,[]);groups.get(x.driver).push(x);}
-const data=[...groups].map(([name,a])=>{
-const chron=a.slice().sort((x,y)=>x.season-y.season||x.round-y.round),q=averagePosition(a,'qual'),finish=averagePosition(a,'position');
-const gain=a.filter(x=>validGrid(x)&&validFinish(x)).reduce((n,x)=>n+x.grid-x.position,0);
-const recent=chron.slice(-5),recentFinish=recent.filter(validFinish),recentAvg=recentFinish.length?recentFinish.reduce((n,x)=>n+x.position,0)/recentFinish.length:null;
-const lastTen=chron.slice(-10,-5).filter(validFinish),priorAvg=lastTen.length?lastTen.reduce((n,x)=>n+x.position,0)/lastTen.length:null;
-const consistency=a.length?a.filter(validFinish).length/a.length:0;
-const power=recent.length?Math.max(0,Math.min(100,Math.round(100-(recentAvg===null?20:recentAvg*4)-((1-consistency)*20)+(recent.filter(x=>validFinish(x)&&x.position<=3).length*3)))):0;
-return {name,a,q,finish,gain,consistency,improvement:priorAvg!==null&&recentAvg!==null?priorAvg-recentAvg:null,power};});
-const blocks=[
-['Power Rankings · Form rating /100','power',true,'Illustrative form score based on recent classified finishes, podiums and finish rate; not an official skill rating.'],
-['Average qualifying position','q',false,'Only recorded qualifying positions; at least three results.'],
-['Average race finish','finish',false,'Only classified finishes; at least three results.'],
-['Total positions gained','gain',true,'Grid minus finish across classified races with valid grids.'],
-['Finish reliability','consistency',true,'Percentage of race entries with classified finishes.'],
-['Recent improvement','improvement',true,'Previous five vs latest five race-entry finishing averages; both windows need classified results.']
-];
-const value=(d,k)=>k==='q'?d.q.count>=3?Number(d.q.value):null:k==='finish'?d.finish.count>=3?Number(d.finish.value):null:k==='improvement'?d.improvement:k==='consistency'?d.consistency*100:d[k];
-const format=(v,k)=>k==='consistency'?v.toFixed(0)+'%':k==='q'||k==='finish'||k==='improvement'?v.toFixed(2):String(v);
-return '<div class="archive-heading"><button class="archive-back" data-back>← Records</button></div><div class="archive-hero"><h2>Driver Performance Rankings</h2><p>Compare the whole grid, including midfield improvement and reliability.</p><div class="archive-links"><a href="#rankings/all">All seasons</a><a href="#rankings/12">Season 12</a><a href="#rankings/11">Season 11</a><a href="#rankings/10">Season 10</a></div></div>'+blocks.map(([title,k,desc,explain])=>{
-const ordered=data.map(d=>({...d,v:value(d,k)})).filter(d=>d.v!==null&&Number.isFinite(d.v)).sort((a,b)=>desc?b.v-a.v:a.v-b.v).slice(0,15);
-return '<div class="panel"><h2>'+title+'</h2><p class="muted">'+explain+'</p><div class="rank-list">'+ordered.map((d,i)=>'<a class="rank-row" href="'+driverUrl(d.name)+'"><span class="rank-pos">'+(i+1)+'</span><span class="rank-person"><strong>'+esc(d.name)+'</strong><small>'+d.a.length+' entries</small></span><span class="rank-score">'+format(d.v,k)+'</span></a>').join('')+'</div></div>';
+const current=powerRankingsData(season),previous=powerRankingsData(season,Math.max(0,current.races.length-1));
+const previousRanks=new Map(previous.eligible.map(x=>[x.name,x]));
+const score=v=>v.toFixed(1);
+const movement=d=>{
+const old=previousRanks.get(d.name);
+if(!old)return 'NEW · Eligible after 3 appearances';
+const change=old.rank-d.rank;
+if(!change)return '— Position unchanged';
+const direction=change>0?'↑':'↓';
+const newAbove=current.eligible.filter(x=>x.rank<d.rank&&!previousRanks.has(x.name)).length;
+const reason=change<0&&newAbove>0?'New entry above':Math.abs(d.rating-old.rating)<.05?'Other ratings changed':d.rating>old.rating?'Rating improved':'Rating changed';
+return direction+Math.abs(change)+' · '+reason;
+};
+const ratingRows=(items,ranked)=>items.map(d=>{
+const last=d.rows[d.rows.length-1],c=last.components;
+const breakdown='Latest weekend: race '+score(c.race)+'/35 · qualifying '+(c.qualifying===null?'unrecorded':score(c.qualifying)+'/20')+' · grid conversion '+(c.execution===null?'unrecorded':score(c.execution)+'/25')+' · completion '+c.completion+'/20'+(last.partial?' · available components rescaled':'');
+return '<tr><td>'+(ranked?d.rank:'—')+'</td><td>'+navLink(driverUrl(d.name),d.name)+'</td><td><strong>'+score(d.rating)+'</strong>'+(ranked?'':'<br><small>Provisional</small>')+'</td><td>'+score(d.recent)+(d.trend===null?'':'<br><small>'+(d.trend>=0?'+':'')+score(d.trend)+' vs previous 3</small>')+'</td><td>P'+d.championship+' · '+fmt(d.points)+' pts</td><td>'+d.entries+'</td><td>'+(ranked?movement(d):'Needs '+(3-d.entries)+' more appearance'+(3-d.entries===1?'':'s'))+'</td><td>'+d.rows.slice(-5).map(x=>'R'+x.round+': '+(validFinish(x)?'P'+x.position:esc(x.status))).join(' · ')+'<br><small>'+breakdown+'</small></td></tr>';
 }).join('');
+const rankingTable=(items,ranked)=>'<div class="tablewrap"><table><thead><tr>'+['Rank','Driver','Season /100','Recent form /100','Championship','Starts','Movement','Recent results & latest score breakdown'].map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+ratingRows(items,ranked)+'</tbody></table></div>';
+return '<div class="archive-heading"><button class="archive-back" data-back>← Records</button></div><div class="archive-hero"><h2>Power & Performance Rankings</h2><p>'+(season==='all'?'All recorded seasons · historical comparison':'Season '+esc(season))+' · Through '+esc(current.races[current.races.length-1]?.event||'available results')+'</p><p>Season-average performance, recent form and championship position in one place.</p><div class="archive-links"><a href="#rankings/all">All seasons</a><a href="#rankings/12">Season 12</a><a href="#rankings/11">Season 11</a><a href="#rankings/10">Season 10</a></div></div>'+
+'<div class="notice"><strong>Calculated performance ratings · /100</strong><br>These are result-based scores, separate from championship points. Editorial race assessments are not included. An unchanged rating can move down when another driver becomes eligible.</div>'+
+'<div class="panel"><h2>Season Power Rankings</h2><p>Average of every scored appearance. At least 3 appearances required; active means an appearance in the latest 3 league rounds. Recent form is the latest 3 appearances, compared with the previous 3 where available.</p>'+rankingTable(current.eligible,true)+'</div>'+
+(current.newcomers.length?'<div class="panel"><h2>New drivers · Provisional ratings</h2><p>Fewer than 3 appearances. These drivers enter the main ranking after their third appearance and may move existing drivers down without changing their scores.</p>'+rankingTable(current.newcomers,false)+'</div>':'')+
+(current.inactive.length?'<div class="panel"><h2>Inactive drivers</h2><p>No appearance in the latest 3 league rounds. Existing scores are retained; missed races never score zero.</p>'+table(['Driver','Rating /100','Appearances'],current.inactive.map(d=>[navLink(driverUrl(d.name),d.name),score(d.rating),d.entries]))+'</div>':'')+
+'<div class="panel"><h2>How the rating works</h2><p>Each weekend: race result /35 + qualifying /20 + grid conversion /25 + race completion /20. The season score is the average weekend total. Scores use field size so finishing positions are comparable.</p><ul><li>Race result: 35 × (field size − finish position) ÷ (field size − 1). A non-finish scores 0.</li><li>Qualifying: 20 × (field size − qualifying position) ÷ (field size − 1).</li><li>Grid conversion: 25 × (0.5 + places gained ÷ (field size − 1)), limited to 0–25. Holding position earns 12.5; recovering places earns more. Non-finishers receive no conversion credit.</li><li>Completion: 20 for a classified finish; 0 for a non-finish.</li></ul><p>Missing qualifying or grid data is excluded and the available components are rescaled to 100. Championship position is shown for context and adds no rating bonus. Championship points ties are displayed alphabetically here, without applying official tie-break rules.</p><p><strong>Limits:</strong> net places gained include inherited positions and recovery from poor qualifying. This model cannot identify overtakes, incident responsibility, tyre strategy, clean driving or game glitches. Completion measures finishing, not fault. Those require a separately reviewed editorial assessment. No subjective scores have been invented or backfilled.</p><p>Movement compares the ranking with the previous league round. “New entry above” identifies newly eligible or returning drivers ahead; multiple factors can contribute to a move.</p></div>';
 }
 function grandPrixHighlights(r,rows){
 const gains=rows.filter(x=>validGrid(x)&&validFinish(x)).map(x=>({...x,gain:x.grid-x.position})).sort((a,b)=>b.gain-a.gain);

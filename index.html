@@ -123,12 +123,12 @@ const circuits=[...new Set(DB.races.map(x=>x.event))].sort((a,b)=>a.localeCompar
 function updateDriverOptions(){
 const previous=$('driver').value,season=$('season').value;
 const available=season==='all'?driverNames:[...new Set(DB.results.filter(x=>x.season==season&&x.round!==0).map(x=>x.driver))].sort((a,b)=>a.localeCompare(b));
-$('driver').innerHTML='<option value="all">All Drivers</option>'+available.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
-$('driver').value=available.includes(previous)?previous:'all';
+$('driver').innerHTML='<option value="">Select a Driver</option><option value="all">All Drivers</option>'+available.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
+$('driver').value=previous==='all'||available.includes(previous)?previous:'';
 }
 updateDriverOptions();
 $('circuit').innerHTML='<option value="all">All Circuits</option>'+circuits.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join('');
-const selected=()=>({s:$('season').value,d:$('driver').value,c:$('circuit').value});
+const selected=()=>({s:$('season').value,d:$('driver').value||'all',c:$('circuit').value});
 function filt(a,{s,d,c},includePre=false){return a.filter(x=>(s==='all'||x.season==s)&&(c==='all'||x.event===c)&&(d==='all'||(x.driver??x.winner)===d)&&(includePre||x.round!==0))}
 function getRaces(f){return filt(DB.races,{...f,d:'all'})}function getRows(f){return filt(DB.results,f)}
 function metrics(rows,races,name){let r=rows.filter(x=>name==='all'||x.driver===name),rr=races.filter(x=>name==='all'||x.winner===name),poles=races.filter(x=>name==='all'||x.pole===name),dotd=races.filter(x=>name==='all'||x.dotd===name);return {starts:r.length,wins:rr.length,podiums:r.filter(x=>x.status==='Finished'&&x.position>=1&&x.position<=3).length,poles:poles.length,dotd:dotd.length,points:r.reduce((a,x)=>a+(Number(x.points)||0),0),dnf:r.filter(x=>x.status==='DNF').length,finish:r.filter(x=>x.status==='Finished'&&Number.isFinite(x.position)),qual:r.filter(x=>Number.isFinite(x.qual))}}

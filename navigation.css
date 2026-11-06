@@ -1,0 +1,7 @@
+/* Shared PFRL navigation */
+.pfrl-site-nav{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0;padding:10px 0;position:sticky;top:0;z-index:10;background:#0b0e13f5;backdrop-filter:blur(10px)}
+.pfrl-site-nav a,.pfrl-site-nav button{display:flex;align-items:center;justify-content:center;flex:1;min-height:46px;margin:0;padding:11px 12px;border:1px solid #303640;border-radius:10px;background:#17191e;color:#bfc2c9;text-decoration:none;text-align:center;font:700 13px system-ui,-apple-system,Segoe UI,sans-serif;cursor:pointer}
+.pfrl-site-nav a:hover,.pfrl-site-nav button:hover{border-color:#55eba2;color:#fff}
+.pfrl-site-nav .active{background:#176e4a;border-color:#43e695;color:#fff}
+.pfrl-site-nav a:focus-visible,.pfrl-site-nav button:focus-visible{outline:2px solid #4de69a;outline-offset:2px}
+@media(max-width:680px){.pfrl-site-nav{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.pfrl-site-nav a:last-child,.pfrl-site-nav button:last-child{grid-column:1/-1}.pfrl-site-nav.mobile-collapsed{display:none}}

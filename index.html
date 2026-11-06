@@ -528,9 +528,9 @@ return {data,eligible,newcomers:data.filter(x=>x.entries<3&&x.active).sort(sort)
 }
 function performanceRankings(season){
 const current=powerRankingsData(season);
-const ratingList=(items,ranked)=>'<div class="rank-list">'+items.map((d,i)=>'<a class="rank-row" href="'+driverUrl(d.name)+'"><span class="rank-pos">'+(ranked?i+1:'—')+'</span><span class="rank-person"><strong>'+esc(d.name)+'</strong><small>'+d.entries+' appearance'+(d.entries===1?'':'s')+(ranked?'':' · Provisional')+'</small></span><span class="rank-score">'+d.rating.toFixed(1)+'<small> /100</small></span></a>').join('')+'</div>';
+const ratingList=(items,ranked)=>'<div class="rank-list">'+items.map((d,i)=>'<a class="rank-row" href="'+driverUrl(d.name)+'"><span class="rank-pos">'+(ranked?i+1:'—')+'</span><span class="rank-person"><strong>'+esc(d.name)+'</strong><small>'+d.entries+' appearance'+(d.entries===1?'':'s')+(ranked?'':' · Provisional')+'</small></span><span class="rank-score">'+Math.round(d.rating)+'</span></a>').join('')+'</div>';
 return '<div class="archive-heading"><button class="archive-back" data-back>← Records</button></div><div class="archive-hero"><h2>Driver Power Rankings</h2><p>'+(season==='all'?'All seasons':'Season '+esc(season))+' · Through '+esc(current.races[current.races.length-1]?.event||'available results')+'</p><div class="archive-links"><a href="#rankings/all">All seasons</a><a href="#rankings/12">Season 12</a><a href="#rankings/11">Season 11</a><a href="#rankings/10">Season 10</a></div></div>'+
-'<div class="panel"><h2>Power Rankings · Rating /100</h2>'+ratingList(current.eligible,true)+'</div>'+
+'<div class="panel"><h2>Power Rankings</h2>'+ratingList(current.eligible,true)+'</div>'+
 (current.newcomers.length?'<div class="panel"><h2>New drivers</h2><p class="muted">Provisional until three appearances.</p>'+ratingList(current.newcomers,false)+'</div>':'')+
 (current.inactive.length?'<div class="panel"><h2>Inactive drivers</h2>'+ratingList(current.inactive,false)+'</div>':'');
 }

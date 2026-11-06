@@ -3,11 +3,14 @@
 const clean=s=>String(s||'').trim().toLowerCase();
 function planColumns(headers){
 const h=headers.map(clean),find=n=>h.indexOf(n),pick=names=>names.map(find).filter(i=>i>=0);
+// Short comparisons and records fit comfortably without a disclosure.
+const lapColumns=h.some(x=>/lap/.test(x));
+if(h.length<=7&&!lapColumns)return h.map((_,i)=>i);
 if(h.includes('classified')&&h.includes('driver'))return pick(['classified','driver','grid']);
 if(h[0]==='metric'||h[0]==='comparison')return h.map((_,i)=>i);
 if(h.includes('driver')&&(h.includes('points')||h.includes('pts shown')||h.includes('pfrl points'))){
-if(h.includes('season')&&h.includes('round'))return pick(['circuit','driver','finish','points']);
-if(h.includes('finish')||h.includes('pos.'))return pick(['finish','pos.','driver','points','pfrl points','pts shown','gap / status']);
+if(h.includes('season')&&h.includes('round'))return pick(['circuit','driver','grid','finish','points']);
+if(h.includes('finish')||h.includes('pos.'))return pick(['finish','pos.','driver','team','grid','qualifying position','points','pfrl points','pts shown','gap / status']);
 if(h.includes('#'))return pick(['#','driver','points','gap']);
 return pick(['driver','points','wins','podiums']);
 }
@@ -62,10 +65,17 @@ const title=document.createElement('strong');title.innerHTML=cells[titleIndex].i
 const circuit=lower.indexOf('circuit'),season=lower.indexOf('season'),round=lower.indexOf('round');
 if(circuit>=0&&circuit!==titleIndex){const context=document.createElement('p');context.className='mobile-data-context';context.innerHTML=cells[circuit].innerHTML+(season>=0?' · S'+cells[season].textContent:'')+(round>=0?' R'+cells[round].textContent:'');card.append(context);}
 const stats=document.createElement('dl');stats.className='mobile-data-stats';
-for(const i of main)if(i!==titleIndex&&i!==rankIndex&&i!==circuit)addCell(stats,headers[i],cells[i]);
+for(const i of main){
+const duplicateStatus=lower[i]==='status'&&(clean(cells[i].textContent)==='finished'||rankIndex>=0&&cells[i].textContent.trim()===cells[rankIndex].textContent.trim());
+const duplicateQual=lower[i]==='qualifying position'&&lower.includes('grid')&&cells[i].textContent===cells[lower.indexOf('grid')].textContent;
+if(i!==titleIndex&&i!==rankIndex&&i!==circuit&&!duplicateStatus&&!duplicateQual)addCell(stats,headers[i],cells[i]);
+}
 if(stats.children.length)card.append(stats);
-const detailsIndexes=extra.filter(i=>!(lower[i]==='status'&&clean(cells[i].textContent)==='finished')&&!(lower[i]==='qualifying position'&&lower.includes('grid')&&cells[i].textContent===cells[lower.indexOf('grid')].textContent));
-if(detailsIndexes.length){
+const detailsIndexes=extra.filter(i=>!(lower[i]==='status'&&(clean(cells[i].textContent)==='finished'||rankIndex>=0&&cells[i].textContent.trim()===cells[rankIndex].textContent.trim()))&&!(lower[i]==='qualifying position'&&lower.includes('grid')&&cells[i].textContent===cells[lower.indexOf('grid')].textContent));
+if(detailsIndexes.length<=2&&!detailsIndexes.some(i=>/lap/.test(lower[i]))){
+for(const i of detailsIndexes)addCell(stats,headers[i],cells[i]);
+if(!stats.parentNode&&stats.children.length)card.append(stats);
+}else if(detailsIndexes.length){
 const details=document.createElement('details'),summary=document.createElement('summary'),detailStats=document.createElement('dl');
 summary.textContent='More details';detailStats.className='mobile-data-stats';
 for(const i of detailsIndexes)addCell(detailStats,headers[i],cells[i]);

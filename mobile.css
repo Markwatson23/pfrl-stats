@@ -42,3 +42,5 @@ body .grid,body .formgrid{grid-template-columns:1fr!important}.layout{display:bl
 .pfrl-site-nav,.tabs.pfrl-site-nav{position:sticky;top:56px;z-index:29;margin:0 0 12px;padding:8px;background:#0b0e13;box-shadow:0 6px 15px #0008}
 .profile-comparisons{border-top:1px solid #31543c;margin-top:12px}.profile-comparisons>summary{display:flex;align-items:center;min-height:44px;font-weight:700;font-size:13px;color:#96d9ac;cursor:pointer}
 }
+
+@media(max-width:680px){.mobile-result-row{padding:9px 11px}.mobile-result-row>.mobile-data-stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:6px;gap:6px 10px}.mobile-result-row>.mobile-data-stats dd{margin-top:0;font-size:14px}.mobile-result-row details{margin-top:6px}.mobile-result-row summary{min-height:44px}}

@@ -2,7 +2,7 @@
   "name": "PFRL Paddock — Statistics Centre",
   "short_name": "PFRL Paddock",
   "description": "PFRL racing league statistics, drivers and achievements",
-  "start_url": "./",
+  "start_url": "./index.html#mypaddock",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b0e13",
@@ -14,5 +14,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "id": "./"
 }

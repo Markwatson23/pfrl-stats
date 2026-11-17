@@ -43,6 +43,9 @@ if(status&&status!=='Finished'&&row.cells[finishIndex])row.cells[finishIndex].te
 const main=planColumns(headers),primary=new Set(main);
 const extra=headers.map((_,i)=>i).filter(i=>!primary.has(i));
 table.classList.add('audited-table');
+const labels=headers.map(clean);
+const compact=(labels.includes('#')&&labels.some(label=>label.includes('points')))||labels.includes('finish')&&labels.includes('driver')&&!labels.includes('circuit');
+
 for(const row of table.rows)for(let i=0;i<row.cells.length;i++)if(extra.includes(i))row.cells[i].classList.add('audit-secondary');
 const container=table.parentElement;
 container.classList.add('audited-table-wrap');
@@ -55,7 +58,7 @@ container.insertBefore(toggle,table);
 const list=document.createElement('div');list.className='mobile-data-list';
 for(const row of table.querySelectorAll('tbody tr')){
 const cells=[...row.cells];if(cells.length!==headers.length)continue;
-const card=document.createElement('article');card.className='mobile-data-card';
+const card=document.createElement('article');card.className='mobile-data-card'+(compact?' mobile-result-row':'');
 const lower=headers.map(clean);
 let titleIndex=lower.indexOf('driver');if(titleIndex<0)titleIndex=lower.indexOf('name');if(titleIndex<0)titleIndex=lower.indexOf('team');if(titleIndex<0)titleIndex=main[0]??0;
 const heading=document.createElement('div');heading.className='mobile-data-heading';

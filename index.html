@@ -138,6 +138,7 @@ select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(
 .paddock-career-portrait .career-team-logo{width:65%;height:65%;object-fit:contain}
 .paddock-career-portrait [hidden]{display:none}
 .paddock-career-averages{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:-5px}
+.paddock-career-medals li{padding:0}.paddock-career-medals summary{cursor:pointer;min-height:44px;padding:8px;align-content:center}.paddock-career-medals li:has(details[open]){flex-basis:100%}.paddock-career-medals details p,.paddock-career-medals details a{margin:0 9px 9px}.paddock-career-medals details a{display:inline-flex;align-items:center;min-height:44px;color:#9af2bd}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#167b50"><link rel="icon" href="./pfrl-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./mobile.css"><script src="./mobile.js" defer></script><link rel="stylesheet" href="./home-nav.css"></head><body><main><div class="pfrl-home-bar"><a href="./index.html#mypaddock">Home</a></div><div class="archive-masthead"><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 9–12 · S9 PARTIAL</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p></div>
 <div class="paddock-menu-row"><h1 class="paddock-heading">My Paddock</h1><button class="mobile-nav-toggle" id="mobileNavToggle" aria-controls="tabs" aria-expanded="false"><span id="menuLabel">Browse PFRL sections</span><span aria-hidden="true">☰</span></button></div><div class="tabs pfrl-site-nav mobile-collapsed" id="tabs" role="navigation" aria-label="Main navigation"><button data-tab="overview" class="active">Overview</button><button data-tab="driver">Driver Profiles</button><button data-tab="championship">Championship Standings</button><button data-tab="race">Race Centre</button><button data-tab="records">Records</button></div><details class="practice-tools"><summary>Practice Tools <span class="beta-badge">BETA</span></summary><p>Tools in testing · More improvements coming soon.</p><div class="archive-links"><a href="./race-prep.html">Race Preparation Centre · BETA →</a><a href="./garage.html">Setup Garage · BETA →</a></div></details>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all" selected>All Seasons</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12">Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -652,12 +653,12 @@ function paddockCareerCard(name, rows){
   const stats = achievementData(rows, DB.races, name);
   const medals = achievementTracks.flatMap(track=>{
     const tier = track.thresholds.findLastIndex(threshold=>stats[track.kind]>=threshold);
-    return tier<0?[]:[{label:track.title+' · '+medalTiers[tier].name, icon:track.icon, tier,
+    return tier<0?[]:[{label:track.title+' · '+medalTiers[tier].name, icon:track.icon, tier, description:track.description+' required: '+track.thresholds[tier]+'.',
       race:achievementUnlockRace(rows,DB.races,name,track.kind,track.thresholds[tier])}];
   });
   const special = specialAchievements(rows,DB.races,name);
   for(const award of specialAchievementDefs){
-    if(special.has(award.id))medals.push({label:award.name,icon:award.icon,tier:-1,race:special.get(award.id)});
+    if(special.has(award.id))medals.push({label:award.name,icon:award.icon,tier:-1,description:award.desc,race:special.get(award.id)});
   }
   const newest = (a,b)=>(b.race?.season||0)-(a.race?.season||0)||(b.race?.round||0)-(a.race?.round||0);
   medals.sort((a,b)=>b.tier-a.tier||newest(a,b));
@@ -677,7 +678,7 @@ function paddockCareerCard(name, rows){
     +'<div class="paddock-career-hero"><div class="paddock-career-portrait">'+portrait+'</div><div class="paddock-career-identity">'
     +'<span class="paddock-team-badge" aria-hidden="true">'+badge+'</span><p>'+esc(team)+'</p><h2>'+esc(name)+'</h2></div></div>'
     +'<dl class="paddock-career-stats">'+numbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+fmt(value)+'</dd></div>').join('')+'</dl><dl class="paddock-career-stats paddock-career-averages">'+moreNumbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>'
-    +(highlights.length?'<ul class="paddock-career-medals">'+highlights.map(award=>'<li><span aria-hidden="true">'+award.icon+'</span> '+esc(award.label)+'</li>').join('')+'</ul>':'')
+    +(highlights.length?'<ul class="paddock-career-medals">'+highlights.map(award=>'<li><details><summary><span aria-hidden="true">'+award.icon+'</span> '+esc(award.label)+'</summary><p>'+esc(award.description)+'</p>'+(award.race?'<a href="'+raceUrl(award.race)+'">Earned at '+esc(award.race.event)+' →</a>':'')+'</details></li>').join('')+'</ul>':'')
     +'<div class="paddock-career-actions"><label class="archive-back"> '+(photo?'Change photo':'Add photo')+'<input type="file" accept="image/*" data-career-photo></label>'
     +(photo?'<button type="button" class="archive-back" data-remove-career-photo>Remove photo</button>':'')
     +'<a href="#achievements/'+encodeURIComponent(name)+'">All achievements →</a></div><p class="mini" data-career-photo-status aria-live="polite">Photo saved on this device.</p></section>';

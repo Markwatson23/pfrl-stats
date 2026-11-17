@@ -761,7 +761,7 @@ function myPaddock(){
   const driverPicker = name
     ? '<details class="panel paddock-driver-picker"><summary>Change driver</summary>'+select+'</details>'
     : '<section class="panel paddock-driver-picker"><h2>Find your driver</h2>'+select+'</section>';
-  return (name?progress+career+nextPanel+driverPicker:driverPicker+nextPanel)+
+  return (name?career+progress+nextPanel+driverPicker:driverPicker+nextPanel)+
     '<p><a class="archive-link" href="#paddock">Browse the public Paddock →</a></p>';
 }
 
@@ -827,7 +827,8 @@ myDriverForm?.addEventListener('submit',event=>{
   try { localStorage.setItem(myDriverKey,myDriverForm.querySelector('select').value); }
   catch { myDriverForm.querySelector('#myDriverStatus').textContent='This browser could not remember your driver.'; return; }
   render();
-  section.querySelector('#paddockLatest')?.focus({preventScroll:true});
+  const card = section.querySelector('[data-career-driver]');
+  if(card){ card.tabIndex=-1; card.focus(); }
 });
 enhanceDriverJourney(section);
 section.querySelector('[data-download-driver]')?.addEventListener('click',e=>downloadDriverCard(decodeURIComponent(e.currentTarget.dataset.downloadDriver)));

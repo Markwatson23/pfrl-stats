@@ -38,7 +38,7 @@ if(!headers.length)return;
 const statusIndex=headers.map(clean).indexOf('status'),finishIndex=headers.map(clean).indexOf('finish');
 if(statusIndex>=0&&finishIndex>=0)for(const row of table.querySelectorAll('tbody tr')){
 const status=row.cells[statusIndex]?.textContent.trim();
-if(status&&status!=='Finished'&&row.cells[finishIndex])row.cells[finishIndex].textContent=status;
+if(status&&status!=='Finished'&&status!=='Unconfirmed'&&row.cells[finishIndex])row.cells[finishIndex].textContent=status;
 }
 const main=planColumns(headers),primary=new Set(main);
 const extra=headers.map((_,i)=>i).filter(i=>!primary.has(i));

@@ -122,6 +122,19 @@ select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(
 .my-paddock-screen .paddock-driver-picker summary{cursor:pointer;min-height:44px;padding:12px 0;font-weight:750}
 .my-paddock-screen .paddock-driver-picker[open] form{margin-top:8px}
 @media(max-width:680px){.my-paddock-screen #content>.panel:first-child .metricgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.paddock-career{max-width:520px;margin:16px 0;padding:14px;border:2px solid var(--team-accent);border-radius:17px 36px 17px 36px;background:linear-gradient(150deg,color-mix(in srgb,var(--team-accent) 27%,#101320),#10131a 64%)}
+.paddock-career-hero{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px;align-items:center}
+.paddock-career-portrait{grid-column:2;grid-row:1;display:grid;place-items:center;aspect-ratio:1;background:#080b12;color:var(--team-accent);font-size:34px;font-weight:900;overflow:hidden;border-radius:9px 21px 9px 9px}
+.paddock-career-portrait img{width:100%;height:100%;object-fit:cover}
+.paddock-career-identity{grid-column:1;grid-row:1;min-width:0}
+.paddock-career-identity p{margin:7px 0 3px;color:#d2dae4}
+.paddock-career-identity h2{margin:0;font-size:clamp(23px,5vw,34px);overflow-wrap:anywhere}
+.paddock-team-badge{display:inline-block;padding:5px 9px;background:#10131a;border:1px solid var(--team-accent);color:var(--team-accent);font-weight:900;font-size:12px;letter-spacing:1px;border-radius:4px 9px}
+.paddock-career-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin:14px 0;text-align:center}
+.paddock-career-stats dt{font-size:10px;color:#c0c9d5}.paddock-career-stats dd{margin:3px 0;color:var(--team-accent);font-size:clamp(15px,4.7vw,23px);font-weight:850;font-variant-numeric:tabular-nums}
+.paddock-career-medals{display:flex;flex-wrap:wrap;gap:5px;padding:0;list-style:none}.paddock-career-medals li{padding:4px 7px;border:1px solid #58616e;border-radius:12px;font-size:11px}.paddock-career-medals li:first-child{border-color:var(--team-accent)}
+.paddock-career-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.paddock-career-actions a{color:#9af2bd;padding:10px 0}.paddock-career-actions label{position:relative;display:inline-flex;align-items:center;margin:0;cursor:pointer}.paddock-career-actions input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.paddock-career-actions label:focus-within{outline:2px solid var(--team-accent)}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#167b50"><link rel="icon" href="./pfrl-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./mobile.css"><script src="./mobile.js" defer></script><link rel="stylesheet" href="./home-nav.css"></head><body><main><div class="pfrl-home-bar"><a href="./index.html#mypaddock">Home</a></div><div class="archive-masthead"><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 9–12 · S9 PARTIAL</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p></div>
 <div class="paddock-menu-row"><h1 class="paddock-heading">My Paddock</h1><button class="mobile-nav-toggle" id="mobileNavToggle" aria-controls="tabs" aria-expanded="false"><span id="menuLabel">Browse PFRL sections</span><span aria-hidden="true">☰</span></button></div><div class="tabs pfrl-site-nav mobile-collapsed" id="tabs" role="navigation" aria-label="Main navigation"><button data-tab="overview" class="active">Overview</button><button data-tab="driver">Driver Profiles</button><button data-tab="championship">Championship Standings</button><button data-tab="race">Race Centre</button><button data-tab="records">Records</button></div><details class="practice-tools"><summary>Practice Tools <span class="beta-badge">BETA</span></summary><p>Tools in testing · More improvements coming soon.</p><div class="archive-links"><a href="./race-prep.html">Race Preparation Centre · BETA →</a><a href="./garage.html">Setup Garage · BETA →</a></div></details>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all" selected>All Seasons</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12">Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -609,6 +622,76 @@ const upcomingRaces = [
   {season:12, round:8, event:'Barcelona', track:'Spain · Barcelona', start:'2026-11-17T20:15:00Z', format:'50% race'}
 ];
 
+const careerTeams = {
+  'Mercedes':['MER','#55e6ce'], 'Ferrari':['FER','#ff6269'], 'Red Bull':['RB','#779aff'],
+  'Racing Bulls':['VCARB','#86b4ff'], 'McLaren':['MCL','#ffa546'], 'Aston Martin':['AM','#61d9b3'],
+  'Alpine':['ALP','#ff91ca'], 'Williams':['WIL','#79adff'], 'Audi':['AUD','#ff7469'],
+  'Haas':['HAA','#f58e96'], 'Cadillac':['CAD','#f1ce7a'], 'Sauber':['SAU','#83ef59']
+};
+
+function paddockCareerCard(name, rows){
+  const team = rows[0].team || 'Team not recorded';
+  const [badge, accent] = careerTeams[normTeam(team)] || ['PFRL','#74edaa'];
+  const stats = achievementData(rows, DB.races, name);
+  const medals = achievementTracks.flatMap(track=>{
+    const tier = track.thresholds.findLastIndex(threshold=>stats[track.kind]>=threshold);
+    return tier<0?[]:[{label:track.title+' · '+medalTiers[tier].name, icon:track.icon, tier,
+      race:achievementUnlockRace(rows,DB.races,name,track.kind,track.thresholds[tier])}];
+  });
+  const special = specialAchievements(rows,DB.races,name);
+  for(const award of specialAchievementDefs){
+    if(special.has(award.id))medals.push({label:award.name,icon:award.icon,tier:-1,race:special.get(award.id)});
+  }
+  const newest = (a,b)=>(b.race?.season||0)-(a.race?.season||0)||(b.race?.round||0)-(a.race?.round||0);
+  medals.sort((a,b)=>b.tier-a.tier||newest(a,b));
+  const highlights = medals.length?[medals[0],...medals.slice(1).sort(newest).slice(0,2)]:[];
+  let photo = '';
+  try { photo = localStorage.getItem('pfrl.photo.'+name)||''; } catch {}
+  const portrait = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(photo)
+    ? '<img alt="Driver portrait" src="'+esc(photo)+'">'
+    : '<span aria-hidden="true">'+esc(name.slice(0,2).toUpperCase())+'</span>';
+  const numbers = [['Starts',stats.entries],['Wins',stats.wins],['Podiums',stats.podiums],['Poles',stats.poles],['Points',stats.points]];
+  return '<section class="paddock-career" style="--team-accent:'+accent+'" data-career-driver="'+esc(name)+'">'
+    +'<div class="paddock-career-hero"><div class="paddock-career-portrait">'+portrait+'</div><div class="paddock-career-identity">'
+    +'<span class="paddock-team-badge" aria-hidden="true">'+badge+'</span><p>'+esc(team)+'</p><h2>'+esc(name)+'</h2></div></div>'
+    +'<dl class="paddock-career-stats">'+numbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+fmt(value)+'</dd></div>').join('')+'</dl>'
+    +(highlights.length?'<ul class="paddock-career-medals">'+highlights.map(award=>'<li><span aria-hidden="true">'+award.icon+'</span> '+esc(award.label)+'</li>').join('')+'</ul>':'')
+    +'<div class="paddock-career-actions"><label class="archive-back"> '+(photo?'Change photo':'Add photo')+'<input type="file" accept="image/*" data-career-photo></label>'
+    +(photo?'<button type="button" class="archive-back" data-remove-career-photo>Remove photo</button>':'')
+    +'<a href="#achievements/'+encodeURIComponent(name)+'">All achievements →</a></div><p class="mini" data-career-photo-status aria-live="polite">Photo saved on this device.</p></section>';
+}
+
+function bindCareerPhoto(section){
+  const card=section.querySelector('[data-career-driver]');
+  if(!card)return;
+  const key='pfrl.photo.'+card.dataset.careerDriver;
+  const status=card.querySelector('[data-career-photo-status]');
+  card.querySelector('[data-career-photo]').addEventListener('change',async event=>{
+    const file=event.target.files[0];
+    if(!file)return;
+    let url;
+    try{
+      if(file.size>20000000)throw Error('File too large');
+      url=URL.createObjectURL(file);
+      const photo=new Image();
+      photo.src=url;
+      await photo.decode();
+      const size=Math.min(photo.naturalWidth,photo.naturalHeight);
+      if(!size)throw Error('Empty image');
+      const canvas=document.createElement('canvas');
+      canvas.width=canvas.height=480;
+      canvas.getContext('2d').drawImage(photo,(photo.naturalWidth-size)/2,(photo.naturalHeight-size)/2,size,size,0,0,480,480);
+      localStorage.setItem(key,canvas.toDataURL('image/jpeg',0.85));
+      if(card.isConnected)render();
+    }catch{status.textContent='Could not save this photo. Try a smaller JPG or PNG.';}
+    finally{if(url)URL.revokeObjectURL(url);}
+  });
+  card.querySelector('[data-remove-career-photo]')?.addEventListener('click',()=>{
+    try{localStorage.removeItem(key);render();}
+    catch{status.textContent='This browser could not remove the saved photo.';}
+  });
+}
+
 function myPaddock(){
   const results = orderedResults(DB.results.filter(row=>row.round>0));
   const names = [...new Set(results.map(row=>row.driver))].sort((a,b)=>a.localeCompare(b));
@@ -619,10 +702,11 @@ function myPaddock(){
   const next = upcomingRaces.find(race=>!DB.races.some(record=>raceId(record)===raceId(race)) && Date.parse(race.start)>Date.now());
   const practice = './race-prep.html'+(next?'?track='+encodeURIComponent(next.track):'');
   const select = '<form id="myDriverForm"><label for="myDriver">Your driver</label><select id="myDriver" required><option value="">Choose your driver</option>'+names.map(driver=>'<option'+(driver===name?' selected':'')+'>'+esc(driver)+'</option>').join('')+'</select><button type="submit" class="archive-back">'+(name?'Update driver':'Save my driver')+'</button><p id="myDriverStatus" class="mini" aria-live="polite">'+(name?'Remembered on this device.':'Choose once to open your stats here each week.')+'</p></form>';
-  let progress = '';
+  let progress = '', career = '';
   if(name){
     const personal = results.filter(row=>row.driver===name);
     const latest = personal[0];
+    career = paddockCareerCard(name,personal);
     const season = latestRace.season;
     const seasonResults = personal.filter(row=>row.season===season);
     const best = seasonResults.filter(validFinish).reduce((position,row)=>Math.min(position,row.position),Infinity);
@@ -649,7 +733,7 @@ function myPaddock(){
   const driverPicker = name
     ? '<details class="panel paddock-driver-picker"><summary>Change driver</summary>'+select+'</details>'
     : '<section class="panel paddock-driver-picker"><h2>Find your driver</h2>'+select+'</section>';
-  return (name?progress+nextPanel+driverPicker:driverPicker+nextPanel)+
+  return (name?progress+career+nextPanel+driverPicker:driverPicker+nextPanel)+
     '<p><a class="archive-link" href="#paddock">Browse the public Paddock →</a></p>';
 }
 
@@ -708,6 +792,7 @@ const pageKind=location.hash.slice(1).split('/')[0];
 const activeSection=onMyPaddock?null:pageKind==='paddock'?'overview':['driver','achievements','teammate','rivalry','metric'].includes(pageKind)?'driver':['race','circuit'].includes(pageKind)?'race':'records';
 document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===activeSection);if(b.dataset.tab===activeSection)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
 section.innerHTML=archive;
+bindCareerPhoto(section);
 const myDriverForm=section.querySelector('#myDriverForm');
 myDriverForm?.addEventListener('submit',event=>{
   event.preventDefault();

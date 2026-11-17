@@ -1,0 +1,10 @@
+.pfrl-home-bar{position:sticky;top:0;z-index:31;display:flex;align-items:center;height:52px;background:#0b0e13}
+.pfrl-home-bar a{display:inline-flex;align-items:center;min-height:44px;padding:0 17px;border:1px solid #458965;border-radius:10px;background:#17402d;color:#e8fff0;font-weight:750;text-decoration:none}
+.pfrl-home-bar a:focus-visible{outline:2px solid #4de69a;outline-offset:2px}
+main .pfrl-site-nav,main .tabs.pfrl-site-nav{top:52px}
+#content{scroll-margin-top:52px}
+@media(max-width:680px){
+main .mobile-nav-toggle{top:52px}
+main .pfrl-site-nav,main .tabs.pfrl-site-nav{top:108px}
+#content,[data-profile-section]{scroll-margin-top:108px}
+}

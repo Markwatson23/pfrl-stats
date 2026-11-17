@@ -135,6 +135,9 @@ select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(
 .paddock-career-stats dt{font-size:10px;color:#c0c9d5}.paddock-career-stats dd{margin:3px 0;color:var(--team-accent);font-size:clamp(15px,4.7vw,23px);font-weight:850;font-variant-numeric:tabular-nums}
 .paddock-career-medals{display:flex;flex-wrap:wrap;gap:5px;padding:0;list-style:none}.paddock-career-medals li{padding:4px 7px;border:1px solid #58616e;border-radius:12px;font-size:11px}.paddock-career-medals li:first-child{border-color:var(--team-accent)}
 .paddock-career-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.paddock-career-actions a{color:#9af2bd;padding:10px 0}.paddock-career-actions label{position:relative;display:inline-flex;align-items:center;margin:0;cursor:pointer}.paddock-career-actions input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.paddock-career-actions label:focus-within{outline:2px solid var(--team-accent)}
+.paddock-career-portrait .career-team-logo{width:65%;height:65%;object-fit:contain}
+.paddock-career-portrait [hidden]{display:none}
+.paddock-career-averages{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:-5px}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#167b50"><link rel="icon" href="./pfrl-icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./navigation.css"><link rel="stylesheet" href="./mobile.css"><script src="./mobile.js" defer></script><link rel="stylesheet" href="./home-nav.css"></head><body><main><div class="pfrl-home-bar"><a href="./index.html#mypaddock">Home</a></div><div class="archive-masthead"><div class="hero"><img class="neon-banner" src="PFRL%20Neon%20Racing%20League%20Banner.png" alt="PFRL neon racing league banner" loading="eager"></div><div class="top"><div><div class="brand">PFRL PADDOCK / OFFICIAL RACE ARCHIVE</div><h1>Statistics Centre</h1></div><span class="tag">SEASONS 9–12 · S9 PARTIAL</span></div><p class="sub">Your season. Your driver. Your history. Explore the PFRL race archive.</p></div>
 <div class="paddock-menu-row"><h1 class="paddock-heading">My Paddock</h1><button class="mobile-nav-toggle" id="mobileNavToggle" aria-controls="tabs" aria-expanded="false"><span id="menuLabel">Browse PFRL sections</span><span aria-hidden="true">☰</span></button></div><div class="tabs pfrl-site-nav mobile-collapsed" id="tabs" role="navigation" aria-label="Main navigation"><button data-tab="overview" class="active">Overview</button><button data-tab="driver">Driver Profiles</button><button data-tab="championship">Championship Standings</button><button data-tab="race">Race Centre</button><button data-tab="records">Records</button></div><details class="practice-tools"><summary>Practice Tools <span class="beta-badge">BETA</span></summary><p>Tools in testing · More improvements coming soon.</p><div class="archive-links"><a href="./race-prep.html">Race Preparation Centre · BETA →</a><a href="./garage.html">Setup Garage · BETA →</a></div></details>
 <div class="filters" id="mainFilters"><div><label for="season">Season</label><select id="season"><option value="all" selected>All Seasons</option><option value="10">Season 10</option><option value="11">Season 11</option><option value="12">Season 12</option></select></div><div><label for="driver">Driver</label><select id="driver"></select></div></div>
@@ -629,6 +632,20 @@ const careerTeams = {
   'Haas':['HAA','#f58e96'], 'Cadillac':['CAD','#f1ce7a'], 'Sauber':['SAU','#83ef59']
 };
 
+const careerLogoSlugs = {
+  "Alpine": "alpine",
+  "Aston Martin": "astonmartin",
+  "Audi": "audi",
+  "Cadillac": "cadillac",
+  "Ferrari": "ferrari",
+  "Haas": "haasf1team",
+  "McLaren": "mclaren",
+  "Mercedes": "mercedes",
+  "Racing Bulls": "racingbulls",
+  "Red Bull": "redbullracing",
+  "Williams": "williams"
+};
+
 function paddockCareerCard(name, rows){
   const team = rows[0].team || 'Team not recorded';
   const [badge, accent] = careerTeams[normTeam(team)] || ['PFRL','#74edaa'];
@@ -647,14 +664,19 @@ function paddockCareerCard(name, rows){
   const highlights = medals.length?[medals[0],...medals.slice(1).sort(newest).slice(0,2)]:[];
   let photo = '';
   try { photo = localStorage.getItem('pfrl.photo.'+name)||''; } catch {}
+  const slug=careerLogoSlugs[normTeam(team)];
+  const logoUrl=slug?'https://media.formula1.com/image/upload/c_lfill,w_48/q_auto/v1740000001/common/f1/2026/'+slug+'/2026'+slug+'logowhite.webp':'';
+  const initials='<span aria-hidden="true">'+esc(name.slice(0,2).toUpperCase())+'</span>';
+  const logo=logoUrl?'<img class="career-team-logo" alt="" src="'+logoUrl+'"><span hidden aria-hidden="true">'+esc(badge)+'</span>':initials;
   const portrait = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(photo)
     ? '<img alt="Driver portrait" src="'+esc(photo)+'">'
-    : '<span aria-hidden="true">'+esc(name.slice(0,2).toUpperCase())+'</span>';
+    : logo;
   const numbers = [['Starts',stats.entries],['Wins',stats.wins],['Podiums',stats.podiums],['Poles',stats.poles],['Points',stats.points]];
+  const moreNumbers=[['Avg. qualifying',averagePosition(rows,'qual').value],['Avg. finish',averagePosition(rows,'position').value],['Driver of the Day',fmt(stats.dotd)]];
   return '<section class="paddock-career" style="--team-accent:'+accent+'" data-career-driver="'+esc(name)+'">'
     +'<div class="paddock-career-hero"><div class="paddock-career-portrait">'+portrait+'</div><div class="paddock-career-identity">'
     +'<span class="paddock-team-badge" aria-hidden="true">'+badge+'</span><p>'+esc(team)+'</p><h2>'+esc(name)+'</h2></div></div>'
-    +'<dl class="paddock-career-stats">'+numbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+fmt(value)+'</dd></div>').join('')+'</dl>'
+    +'<dl class="paddock-career-stats">'+numbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+fmt(value)+'</dd></div>').join('')+'</dl><dl class="paddock-career-stats paddock-career-averages">'+moreNumbers.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>'
     +(highlights.length?'<ul class="paddock-career-medals">'+highlights.map(award=>'<li><span aria-hidden="true">'+award.icon+'</span> '+esc(award.label)+'</li>').join('')+'</ul>':'')
     +'<div class="paddock-career-actions"><label class="archive-back"> '+(photo?'Change photo':'Add photo')+'<input type="file" accept="image/*" data-career-photo></label>'
     +(photo?'<button type="button" class="archive-back" data-remove-career-photo>Remove photo</button>':'')
@@ -664,6 +686,12 @@ function paddockCareerCard(name, rows){
 function bindCareerPhoto(section){
   const card=section.querySelector('[data-career-driver]');
   if(!card)return;
+  const logo=card.querySelector('.career-team-logo');
+  const showLogoFallback=()=>{logo.hidden=true;logo.nextElementSibling.hidden=false;};
+  if(logo){
+    logo.addEventListener('error',showLogoFallback);
+    if(logo.complete&&!logo.naturalWidth)showLogoFallback();
+  }
   const key='pfrl.photo.'+card.dataset.careerDriver;
   const status=card.querySelector('[data-career-photo-status]');
   card.querySelector('[data-career-photo]').addEventListener('change',async event=>{

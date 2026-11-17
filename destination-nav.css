@@ -1,0 +1,5 @@
+.destination-nav{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:8px 0;margin:8px 0 14px;background:#0b0e13}
+.destination-nav a{display:grid;place-items:center;min-height:44px;padding:4px;border:1px solid #39464c;border-radius:8px;color:#e4f2ec;background:#171d22;text-decoration:none;text-align:center;font-weight:750}
+.destination-nav a[aria-current]{background:#176e4a;border-color:#4de69a;color:#fff}
+.destination-nav a:focus-visible{outline:2px solid #4de69a;outline-offset:2px}#content{scroll-margin-top:65px}
+@media(max-width:680px){.destination-nav{gap:4px}.destination-nav a{font-size:clamp(10px,3vw,13px)}}

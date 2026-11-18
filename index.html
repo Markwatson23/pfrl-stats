@@ -727,7 +727,7 @@ function bindCareerPhoto(section){
     finally{if(url)URL.revokeObjectURL(url);}
   });
   card.querySelector('[data-remove-career-photo]')?.addEventListener('click',()=>{
-    try{localStorage.removeItem(key);render();}
+    try{localStorage.removeItem(key);if(card.dataset.careerDriver==='Thorrie')localStorage.removeItem('pfrl.photo.Thorsten');render();}
     catch{status.textContent='This browser could not remove the saved photo.';}
   });
 }

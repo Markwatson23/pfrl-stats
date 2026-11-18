@@ -671,7 +671,7 @@ function paddockCareerCard(name, rows, rank, season){
   medals.sort((a,b)=>b.tier-a.tier||newest(a,b));
   const highlights = medals.length?[medals[0],...medals.slice(1).sort(newest).slice(0,2)]:[];
   let photo = '';
-  try { photo = localStorage.getItem('pfrl.photo.'+name)||''; } catch {}
+  try { photo = localStorage.getItem('pfrl.photo.'+name)||(name==='Thorrie'?localStorage.getItem('pfrl.photo.Thorsten'):'')||''; } catch {}
   const slug=careerLogoSlugs[normTeam(team)];
   const logoUrl=slug?'https://media.formula1.com/image/upload/c_lfill,w_128/q_auto/v1740000001/common/f1/2026/'+slug+'/2026'+slug+'logowhite.webp':'';
   const initials='<span aria-hidden="true">'+esc(name.slice(0,2).toUpperCase())+'</span>';
@@ -766,6 +766,7 @@ function myPaddock(){
   const names = [...new Set(results.map(row=>row.driver))].sort((a,b)=>a.localeCompare(b));
   let name = '';
   try { name = localStorage.getItem(myDriverKey) || ''; } catch {}
+  if(name==='Thorsten')name='Thorrie';
   if(!names.includes(name)) name = '';
   const latestRace = orderedResults(DB.races.filter(race=>race.round>0))[0];
   const next = upcomingRaces.find(race=>!DB.races.some(record=>raceId(record)===raceId(race)) && Date.parse(race.start)>Date.now());
@@ -808,7 +809,7 @@ function myPaddock(){
 }
 
 function archiveRoute(){
-const parts=decodeURIComponent(location.hash.slice(1)).split('/'),type=parts[0];
+const parts=decodeURIComponent(location.hash.slice(1)).split('/').map(part=>part==='Thorsten'?'Thorrie':part),type=parts[0];
 if(type==='section'&&parts[1]==='overview')return explorePaddock('',Math.max(...DB.races.map(r=>r.season)));
 if(type==='section'&&parts[1]==='driver'&&$('driver').value&&$('driver').value!=='all')return driverPage($('driver').value);
 if(type==='section'&&parts.length===2&&['overview','driver','championship','race','records','compare','circuit'].includes(parts[1])){tab=parts[1];return null;}
